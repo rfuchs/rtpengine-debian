@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -e
+set -x
+
+NEW_FILE=~/.rtpe.last_tag.new
+CUR_FILE=~/.rtpe.last_tag.cur
+
+test -f "$NEW_FILE" || exit 0
+
+if ! test -f "$CUR_FILE"; then
+	cp -a "$NEW_FILE" "$CUR_FILE"
+	exit 0
+fi
+
+if diff -q "$NEW_FILE" "$CUR_FILE"; then
+	exit 0
+fi
+
+
+
+cp -a "$NEW_FILE" "$CUR_FILE"

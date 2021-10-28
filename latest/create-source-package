@@ -1,0 +1,94 @@
+#!/bin/bash
+
+set -e
+set -x
+
+git clone --branch "$VERSION" https://github.com/sipwise/rtpengine.git
+
+test ! -e rtpengine-"$VERSION"
+mkdir rtpengine-"$VERSION"
+
+cp -va rtpengine/. rtpengine-"$VERSION"
+
+pushd rtpengine-"$VERSION"
+rename 's/ngcp-rtpengine/rtpengine/' debian/ngcp-rtpengine*
+find debian -type f -print0 | xargs -0 sed -i 's/ngcp-rtpengine/rtpengine/g'
+echo '3.0 (quilt)' > debian/source/format
+
+patch -p0 << 'EOF'
+diff -ur debian.orig/control debian/control
+--- debian.orig/control	2021-10-28 19:59:20.106706951 +0200
++++ debian/control	2021-10-28 20:03:37.483874745 +0200
+@@ -56,6 +56,8 @@
+  lsb-base (>= 3.0-6),
+  ${misc:Depends},
+  ${shlibs:Depends},
++Conflicts:
++ ngcp-rtpengine-daemon,
+ Description: proxy for RTP and media streams used in NGCP, userspace part
+  This daemon handles the first stages of proxying media streams and talks to
+  the kernel part of the proxy for eventual high-performance packet forwarding.
+@@ -72,6 +74,8 @@
+  nfs-common,
+  ${misc:Depends},
+  ${shlibs:Depends},
++Conflicts:
++ ngcp-rtpengine-recording-daemon,
+ Description: recording daemon for RTP and media streams
+  This daemon handles the call recording (media intercept) component of rtpengine.
+ 
+@@ -80,6 +84,9 @@
+ Depends:
+  ${misc:Depends},
+  ${shlibs:Depends},
++Conflicts:
++ ngcp-rtpengine-iptables,
++ rtpengine-iptables,
+ Description: IPtables extension module for the kernel-space NGCP media proxy
+  Provides the IPtables extension needed to configure the mediaproxy rule.
+ 
+@@ -104,6 +111,8 @@
+  debhelper-compat (= 12),
+  module-assistant,
+  ${misc:Depends},
++Conflicts:
++ ngcp-rtpengine-kernel-source,
+ Description: IPtables kernel module for the NGCP media proxy - source
+  Provides the kernel-space part of the NGCP media proxy for high-
+  performance packet forwarding.
+@@ -119,6 +128,8 @@
+  dkms (>= 1.95),
+  lsb-release,
+  ${misc:Depends},
++Conflicts:
++ ngcp-rtpengine-kernel-dkms,
+ Description: IPtables kernel module for the NGCP media proxy - DKMS
+  Provides the kernel-space part of the NGCP media proxy for high-
+  performance packet forwarding.
+@@ -137,5 +148,7 @@
+  netcat-openbsd | netcat,
+  ${misc:Depends},
+  ${perl:Depends},
++Conflicts:
++ ngcp-rtpengine-utils,
+ Description: scripts and Perl modules for NGCP rtpengine
+  This package contains scripts and Perl modules for NGCP rtpengine
+diff -ur debian.orig/control.modules.in debian/control.modules.in
+--- debian.orig/control.modules.in	2021-10-28 19:59:20.106706951 +0200
++++ debian/control.modules.in	2021-10-28 20:01:24.551398944 +0200
+@@ -13,6 +13,8 @@
+  linux-modules-_KVERS_ | linux-image-_KVERS_,
+ Provides:
+  rtpengine-kernel,
++Conflicts:
++ ngcp-rtpengine-kernel-modules-_KVERS_,
+ Description: IPtables kernel module for the NGCP media proxy
+  This package provides the rtpengine module for
+  the Linux kernel version _KVERS_.
+EOF
+
+popd
+tar -czf rtpengine_"$VERSION".orig.tar.gz rtpengine-"$VERSION"
+rm -rf rtpengine
+
+echo export VERSION="$VERSION"
