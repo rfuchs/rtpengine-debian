@@ -1,0 +1,125 @@
+#!/bin/bash
+
+set -e
+set -x
+
+if test -z "$VERSION"; then
+	VERSION=$(date +%Y%m%d%H%M)
+fi
+
+git clone https://github.com/sipwise/rtpengine.git
+
+cd rtpengine
+git tag --list mr\* | tail -n 1 > ~/.rtpe.last_tag.$$
+cd ..
+mv -f ~/.rtpe.last_tag.$$ ~/.rtpe.last_tag.new
+
+if test -n "$THIS_BUILD_ID"; then
+	cd rtpengine
+
+	THIS_ID=$(git rev-parse HEAD)
+	if test -n "$LAST_BUILD_ID" -a -f "$LAST_BUILD_ID"; then
+		LAST_ID=$(<"$LAST_BUILD_ID")
+		if test "$LAST_ID" = "$THIS_ID"; then
+			echo no new commits
+			exit 42
+		fi
+	fi
+
+	echo "$THIS_ID" > "$THIS_BUILD_ID"
+	cd ..
+fi
+
+test ! -e rtpengine-beta-"$VERSION"
+mkdir rtpengine-beta-"$VERSION"
+
+cp -va rtpengine/. rtpengine-beta-"$VERSION"
+
+pushd rtpengine-beta-"$VERSION"
+rename 's/ngcp-rtpengine/rtpengine-beta/' debian/ngcp-rtpengine*
+find debian -type f -print0 | xargs -0 sed -i 's/ngcp-rtpengine/rtpengine-beta/g'
+echo '3.0 (quilt)' > debian/source/format
+
+patch -p0 << 'EOF'
+diff -ur debian.orig/control debian/control
+--- debian.orig/control	2021-10-28 14:35:48.959512822 +0200
++++ debian/control	2021-10-28 14:34:16.533933067 +0200
+@@ -56,6 +56,9 @@
+  lsb-base (>= 3.0-6),
+  ${misc:Depends},
+  ${shlibs:Depends},
++Conflicts:
++ ngcp-rtpengine-daemon,
++ rtpengine-daemon,
+ Description: proxy for RTP and media streams used in NGCP, userspace part
+  This daemon handles the first stages of proxying media streams and talks to
+  the kernel part of the proxy for eventual high-performance packet forwarding.
+@@ -72,6 +75,9 @@
+  nfs-common,
+  ${misc:Depends},
+  ${shlibs:Depends},
++Conflicts:
++ ngcp-rtpengine-recording-daemon,
++ rtpengine-recording-daemon,
+ Description: recording daemon for RTP and media streams
+  This daemon handles the call recording (media intercept) component of rtpengine.
+
+@@ -80,6 +86,9 @@
+ Depends:
+  ${misc:Depends},
+  ${shlibs:Depends},
++Conflicts:
++ ngcp-rtpengine-iptables,
++ rtpengine-iptables,
+ Description: IPtables extension module for the kernel-space NGCP media proxy
+  Provides the IPtables extension needed to configure the mediaproxy rule.
+
+@@ -104,6 +113,9 @@
+  debhelper-compat (= 12),
+  module-assistant,
+  ${misc:Depends},
++Conflicts:
++ ngcp-rtpengine-kernel-source,
++ rtpengine-kernel-source,
+ Description: IPtables kernel module for the NGCP media proxy - source
+  Provides the kernel-space part of the NGCP media proxy for high-
+  performance packet forwarding.
+@@ -119,6 +131,9 @@
+  dkms (>= 1.95),
+  lsb-release,
+  ${misc:Depends},
++Conflicts:
++ ngcp-rtpengine-kernel-dkms,
++ rtpengine-kernel-dkms,
+ Description: IPtables kernel module for the NGCP media proxy - DKMS
+  Provides the kernel-space part of the NGCP media proxy for high-
+  performance packet forwarding.
+@@ -137,5 +152,8 @@
+  netcat-openbsd | netcat,
+  ${misc:Depends},
+  ${perl:Depends},
++Conflicts:
++ ngcp-rtpengine-utils,
++ rtpengine-utils,
+ Description: scripts and Perl modules for NGCP rtpengine
+  This package contains scripts and Perl modules for NGCP rtpengine
+diff -ur debian.orig/control.modules.in debian/control.modules.in
+--- debian.orig/control.modules.in	2021-10-28 14:35:48.999511774 +0200
++++ debian/control.modules.in	2021-10-28 14:35:22.756198999 +0200
+@@ -13,6 +13,9 @@
+  linux-modules-_KVERS_ | linux-image-_KVERS_,
+ Provides:
+  rtpengine-beta-kernel,
++Conflicts:
++ ngcp-rtpengine-kernel-modules-_KVERS_,
++ rtpengine-kernel-modules-_KVERS_,
+ Description: IPtables kernel module for the NGCP media proxy
+  This package provides the rtpengine-beta module for
+  the Linux kernel version _KVERS_.
+EOF
+
+popd
+tar -czf rtpengine-beta_"$VERSION".orig.tar.gz rtpengine-beta-"$VERSION"
+rm -rf rtpengine
+
+echo export VERSION="$VERSION"
