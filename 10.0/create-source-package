@@ -17,9 +17,16 @@ echo '3.0 (quilt)' > debian/source/format
 
 patch -p0 << 'EOF'
 diff -ur debian.orig/control debian/control
---- debian.orig/control	2021-10-28 19:59:20.106706951 +0200
-+++ debian/control	2021-10-28 20:03:37.483874745 +0200
-@@ -56,6 +56,8 @@
+--- debian.orig/control	2021-10-29 10:08:34.383082012 -0400
++++ debian/control	2021-10-29 10:08:51.451031439 -0400
+@@ -49,13 +49,13 @@
+ Recommends:
+  rtpengine-recording-daemon,
+  rtpengine-utils,
+-Suggests:
+- ngcp-system-tools,
+ Depends:
+  iptables,
   lsb-base (>= 3.0-6),
   ${misc:Depends},
   ${shlibs:Depends},
@@ -28,7 +35,14 @@ diff -ur debian.orig/control debian/control
  Description: proxy for RTP and media streams used in NGCP, userspace part
   This daemon handles the first stages of proxying media streams and talks to
   the kernel part of the proxy for eventual high-performance packet forwarding.
-@@ -72,6 +74,8 @@
+@@ -65,13 +65,13 @@
+ Build-Profiles: <!pkg.rtpengine.no-transcoding>
+ Recommends:
+  rtpengine-utils,
+-Suggests:
+- ngcp-system-tools,
+ Depends:
+  lsb-base (>= 3.0-6),
   nfs-common,
   ${misc:Depends},
   ${shlibs:Depends},
@@ -37,7 +51,7 @@ diff -ur debian.orig/control debian/control
  Description: recording daemon for RTP and media streams
   This daemon handles the call recording (media intercept) component of rtpengine.
  
-@@ -80,6 +84,8 @@
+@@ -80,6 +80,8 @@
  Depends:
   ${misc:Depends},
   ${shlibs:Depends},
@@ -46,7 +60,7 @@ diff -ur debian.orig/control debian/control
  Description: IPtables extension module for the kernel-space NGCP media proxy
   Provides the IPtables extension needed to configure the mediaproxy rule.
  
-@@ -103,6 +110,8 @@
+@@ -104,6 +106,8 @@
   debhelper-compat (= 12),
   module-assistant,
   ${misc:Depends},
@@ -55,7 +69,13 @@ diff -ur debian.orig/control debian/control
  Description: IPtables kernel module for the NGCP media proxy - source
   Provides the kernel-space part of the NGCP media proxy for high-
   performance packet forwarding.
-@@ -118,6 +127,8 @@
+@@ -113,12 +117,12 @@
+ Package: rtpengine-kernel-dkms
+ Architecture: all
+ Section: kernel
+-Suggests:
+- ngcp-system-tools,
+ Depends:
   dkms (>= 1.95),
   lsb-release,
   ${misc:Depends},
@@ -64,7 +84,7 @@ diff -ur debian.orig/control debian/control
  Description: IPtables kernel module for the NGCP media proxy - DKMS
   Provides the kernel-space part of the NGCP media proxy for high-
   performance packet forwarding.
-@@ -136,5 +147,7 @@
+@@ -137,5 +141,7 @@
   netcat-openbsd | netcat,
   ${misc:Depends},
   ${perl:Depends},
@@ -73,8 +93,8 @@ diff -ur debian.orig/control debian/control
  Description: scripts and Perl modules for NGCP rtpengine
   This package contains scripts and Perl modules for NGCP rtpengine
 diff -ur debian.orig/control.modules.in debian/control.modules.in
---- debian.orig/control.modules.in	2021-10-28 19:59:20.106706951 +0200
-+++ debian/control.modules.in	2021-10-28 20:01:24.551398944 +0200
+--- debian.orig/control.modules.in	2021-10-29 10:08:34.383082012 -0400
++++ debian/control.modules.in	2021-10-29 10:08:39.651066407 -0400
 @@ -13,6 +13,8 @@
   linux-modules-_KVERS_ | linux-image-_KVERS_,
  Provides:

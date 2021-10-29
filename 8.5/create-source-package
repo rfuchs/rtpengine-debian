@@ -17,9 +17,17 @@ echo '3.0 (quilt)' > debian/source/format
 
 patch -p0 << 'EOF'
 diff -ur debian.orig/control debian/control
---- debian.orig/control	2021-10-29 00:32:52.707680372 +0200
-+++ debian/control	2021-10-29 00:36:12.578441728 +0200
-@@ -53,6 +53,7 @@
+--- debian.orig/control	2021-10-29 10:18:57.545208462 -0400
++++ debian/control	2021-10-29 10:20:00.429016466 -0400
+@@ -45,14 +45,13 @@
+ Recommends:
+  rtpengine-recording-daemon,
+  rtpengine-utils,
+-Suggests:
+- ngcp-system-tools,
+ Depends:
+  lsb-base (>= 3.0-6),
+  ${misc:Depends},
   ${shlibs:Depends},
  Conflicts:
   ngcp-mediaproxy-ng-daemon,
@@ -27,7 +35,14 @@ diff -ur debian.orig/control debian/control
   rtpengine-redis1,
  Replaces:
   ngcp-mediaproxy-ng-daemon,
-@@ -72,6 +73,8 @@
+@@ -65,13 +64,13 @@
+ Architecture: any
+ Recommends:
+  rtpengine-utils,
+-Suggests:
+- ngcp-system-tools,
+ Depends:
+  lsb-base (>= 3.0-6),
   nfs-common,
   ${misc:Depends},
   ${shlibs:Depends},
@@ -36,7 +51,7 @@ diff -ur debian.orig/control debian/control
  Description: recording daemon for RTP and media streams
   This daemon handles the call recording (media intercept) component of rtpengine.
  
-@@ -82,6 +85,7 @@
+@@ -82,6 +81,7 @@
   ${shlibs:Depends},
  Conflicts:
   ngcp-mediaproxy-ng-iptables,
@@ -44,7 +59,7 @@ diff -ur debian.orig/control debian/control
  Replaces:
   ngcp-mediaproxy-ng-iptables,
  Description: IPtables extension module for the kernel-space NGCP media proxy
-@@ -114,6 +118,7 @@
+@@ -114,6 +114,7 @@
   ${misc:Depends},
  Conflicts:
   ngcp-mediaproxy-ng-kernel-source,
@@ -52,7 +67,15 @@ diff -ur debian.orig/control debian/control
  Replaces:
   ngcp-mediaproxy-ng-kernel-source,
  Description: IPtables kernel module for the NGCP media proxy - source
-@@ -133,6 +138,7 @@
+@@ -125,14 +126,13 @@
+ Package: rtpengine-kernel-dkms
+ Architecture: all
+ Section: kernel
+-Suggests:
+- ngcp-system-tools,
+ Depends:
+  dkms (>= 1.95),
+  lsb-release,
   ${misc:Depends},
  Conflicts:
   ngcp-mediaproxy-ng-kernel-dkms,
@@ -60,7 +83,7 @@ diff -ur debian.orig/control debian/control
  Replaces:
   ngcp-mediaproxy-ng-kernel-dkms,
  Description: IPtables kernel module for the NGCP media proxy - DKMS
-@@ -153,5 +159,7 @@
+@@ -153,5 +153,7 @@
   netcat-openbsd | netcat,
   ${misc:Depends},
   ${perl:Depends},
@@ -69,8 +92,8 @@ diff -ur debian.orig/control debian/control
  Description: scripts and Perl modules for NGCP rtpengine
   This package contains scripts and Perl modules for NGCP rtpengine
 diff -ur debian.orig/control.modules.in debian/control.modules.in
---- debian.orig/control.modules.in	2021-10-29 00:32:52.707680372 +0200
-+++ debian/control.modules.in	2021-10-29 00:36:41.301688868 +0200
+--- debian.orig/control.modules.in	2021-10-29 10:18:57.549208449 -0400
++++ debian/control.modules.in	2021-10-29 10:19:07.929176793 -0400
 @@ -13,6 +13,8 @@
   linux-modules-_KVERS_ | linux-image-_KVERS_,
  Provides:
