@@ -1,0 +1,66 @@
+#!/bin/bash
+
+set -e
+set -x
+
+TAG="$1"
+BUILDDIR=~/tmp
+REPO=~/htdocs/dfx.at/rtpengine/10.0
+RELEASES='sid, bookworm,~bpo12+1 bullseye,~bpo11+1 buster,~bpo10+1'
+ARCHS='amd64 i386'
+
+test -n "$RTPENGINE_DEBIAN_SRCDIR"
+test -n "$TAG"
+
+export TAG
+
+VERSION=${TAG#mr}
+test -n "$VERSION"
+export VERSION
+
+cd "$BUILDDIR"
+mkdir build.$$
+
+OUTPUT_DIR="$BUILDDIR/artefacts.$$"
+mkdir artefacts.$$
+test -d "$OUTPUT_DIR"
+
+cd build.$$
+
+"$RTPENGINE_DEBIAN_SRCDIR"/10.0/create-source-package
+
+for RELEASE in $RELEASES; do
+	IFS=, read -a REL_NAMES <<< "$RELEASE"
+	RELEASE=${REL_NAMES[0]}
+	REL_CODE=${REL_NAMES[1]}
+	FULL_VER="$VERSION"-1"$REL_CODE"
+	export RELEASE
+	export REL_CODE
+	export FULL_VER
+	mkdir "$RELEASE"
+	cd "$RELEASE"
+	"$RTPENGINE_DEBIAN_SRCDIR"/10.0/create-debian-build
+	done_all=false
+	for ARCH in $ARCHS; do
+		sudo cowbuilder --build --buildplace ~/var/cache/pbuilder/build --buildresult "$OUTPUT_DIR" --basepath ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".cow --aptcache ~/var/cache/aptcache rtpengine_"$FULL_VER".dsc
+		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-daemon_"$FULL_VER"_"$ARCH".deb
+		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-daemon-dbgsym_"$FULL_VER"_"$ARCH".deb
+		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-iptables_"$FULL_VER"_"$ARCH".deb
+		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-iptables-dbgsym_"$FULL_VER"_"$ARCH".deb
+		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-recording-daemon_"$FULL_VER"_"$ARCH".deb
+		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-recording-daemon-dbgsym_"$FULL_VER"_"$ARCH".deb
+		if ! $done_all; then
+			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine_"$FULL_VER"_all.deb
+			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-kernel-dkms_"$FULL_VER"_all.deb
+			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-kernel-source_"$FULL_VER"_all.deb
+			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-utils_"$FULL_VER"_all.deb
+			done_all=true
+		fi
+	done
+	reprepro -Vb "$REPO" -C main includedsc "$RELEASE" "$OUTPUT_DIR"/rtpengine_"$FULL_VER".dsc
+	cd ..
+done
+
+cd ..
+rm -rf build.$$
+rm -rf "$OUTPUT_DIR"
