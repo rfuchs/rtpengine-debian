@@ -3,34 +3,7 @@
 set -e
 set -x
 
-if test -z "$VERSION"; then
-	VERSION=$(date +%Y%m%d%H%M)
-fi
-
-git clone https://github.com/sipwise/rtpengine.git
-
-cd rtpengine
-git tag > ~/.rtpe.all.tags.$$
-git branch -r > ~/.rtpe.all.branches.$$
-cd ..
-mv -f ~/.rtpe.all.tags.$$ ~/.rtpe.all.tags.new
-mv -f ~/.rtpe.all.branches.$$ ~/.rtpe.all.branches.new
-
-if test -n "$THIS_BUILD_ID"; then
-	cd rtpengine
-
-	THIS_ID=$(git rev-parse HEAD)
-	if test -n "$LAST_BUILD_ID" -a -f "$LAST_BUILD_ID"; then
-		LAST_ID=$(<"$LAST_BUILD_ID")
-		if test "$LAST_ID" = "$THIS_ID"; then
-			echo no new commits
-			exit 42
-		fi
-	fi
-
-	echo "$THIS_ID" > "$THIS_BUILD_ID"
-	cd ..
-fi
+git clone --branch "$TAG" https://github.com/sipwise/rtpengine.git
 
 test ! -e rtpengine-"$VERSION"
 mkdir rtpengine-"$VERSION"
@@ -44,18 +17,17 @@ echo '3.0 (quilt)' > debian/source/format
 
 patch -p0 << 'EOF'
 diff -ur debian.orig/control debian/control
---- debian.orig/control	2021-10-28 19:59:20.106706951 +0200
-+++ debian/control	2021-10-28 20:03:37.483874745 +0200
-@@ -56,6 +56,8 @@
-  lsb-base (>= 3.0-6),
-  ${misc:Depends},
+--- debian.orig/control	2021-10-29 00:32:52.707680372 +0200
++++ debian/control	2021-10-29 00:36:12.578441728 +0200
+@@ -53,6 +53,7 @@
   ${shlibs:Depends},
-+Conflicts:
+ Conflicts:
+  ngcp-mediaproxy-ng-daemon,
 + ngcp-rtpengine-daemon,
- Description: proxy for RTP and media streams used in NGCP, userspace part
-  This daemon handles the first stages of proxying media streams and talks to
-  the kernel part of the proxy for eventual high-performance packet forwarding.
-@@ -72,6 +74,8 @@
+  rtpengine-redis1,
+ Replaces:
+  ngcp-mediaproxy-ng-daemon,
+@@ -72,6 +73,8 @@
   nfs-common,
   ${misc:Depends},
   ${shlibs:Depends},
@@ -64,34 +36,31 @@ diff -ur debian.orig/control debian/control
  Description: recording daemon for RTP and media streams
   This daemon handles the call recording (media intercept) component of rtpengine.
  
-@@ -80,6 +84,8 @@
- Depends:
-  ${misc:Depends},
+@@ -82,6 +85,7 @@
   ${shlibs:Depends},
-+Conflicts:
+ Conflicts:
+  ngcp-mediaproxy-ng-iptables,
 + ngcp-rtpengine-iptables,
+ Replaces:
+  ngcp-mediaproxy-ng-iptables,
  Description: IPtables extension module for the kernel-space NGCP media proxy
-  Provides the IPtables extension needed to configure the mediaproxy rule.
- 
-@@ -103,6 +110,8 @@
-  debhelper-compat (= 12),
-  module-assistant,
+@@ -114,6 +118,7 @@
   ${misc:Depends},
-+Conflicts:
+ Conflicts:
+  ngcp-mediaproxy-ng-kernel-source,
 + ngcp-rtpengine-kernel-source,
+ Replaces:
+  ngcp-mediaproxy-ng-kernel-source,
  Description: IPtables kernel module for the NGCP media proxy - source
-  Provides the kernel-space part of the NGCP media proxy for high-
-  performance packet forwarding.
-@@ -118,6 +127,8 @@
-  dkms (>= 1.95),
-  lsb-release,
+@@ -133,6 +138,7 @@
   ${misc:Depends},
-+Conflicts:
+ Conflicts:
+  ngcp-mediaproxy-ng-kernel-dkms,
 + ngcp-rtpengine-kernel-dkms,
+ Replaces:
+  ngcp-mediaproxy-ng-kernel-dkms,
  Description: IPtables kernel module for the NGCP media proxy - DKMS
-  Provides the kernel-space part of the NGCP media proxy for high-
-  performance packet forwarding.
-@@ -136,5 +147,7 @@
+@@ -153,5 +159,7 @@
   netcat-openbsd | netcat,
   ${misc:Depends},
   ${perl:Depends},
@@ -100,8 +69,8 @@ diff -ur debian.orig/control debian/control
  Description: scripts and Perl modules for NGCP rtpengine
   This package contains scripts and Perl modules for NGCP rtpengine
 diff -ur debian.orig/control.modules.in debian/control.modules.in
---- debian.orig/control.modules.in	2021-10-28 19:59:20.106706951 +0200
-+++ debian/control.modules.in	2021-10-28 20:01:24.551398944 +0200
+--- debian.orig/control.modules.in	2021-10-29 00:32:52.707680372 +0200
++++ debian/control.modules.in	2021-10-29 00:36:41.301688868 +0200
 @@ -13,6 +13,8 @@
   linux-modules-_KVERS_ | linux-image-_KVERS_,
  Provides:

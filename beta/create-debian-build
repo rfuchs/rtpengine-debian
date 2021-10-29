@@ -8,11 +8,11 @@ test -n "$RTPENGINE_DEBIAN_SRCDIR"
 test -n "$VERSION" # VERSION=$(date +%Y%m%d%H%H)
 test -n "$FULL_VER"
 
-test -f ../rtpengine-beta_"$VERSION".orig.tar.gz
-test -d ../rtpengine-beta-"$VERSION"
+test -f ../rtpengine_"$VERSION".orig.tar.gz
+test -d ../rtpengine-"$VERSION"
 
-cp -va ../rtpengine-beta_"$VERSION".orig.tar.gz ../rtpengine-beta-"$VERSION" .
-cd rtpengine-beta-"$VERSION"
+cp -va ../rtpengine_"$VERSION".orig.tar.gz ../rtpengine-"$VERSION" .
+cd rtpengine-"$VERSION"
 
 case "$RELEASE" in
 	buster)
@@ -21,6 +21,6 @@ case "$RELEASE" in
 		;;
 esac
 
-dch -v "$FULL_VER" -D "$RELEASE" --package rtpengine-beta "Beta build"
+dch -v "$FULL_VER" -D "$RELEASE" --package rtpengine "Beta build"
 cd ..
-dpkg-source -b rtpengine-beta-"$VERSION"
+dpkg-source -b rtpengine-"$VERSION"

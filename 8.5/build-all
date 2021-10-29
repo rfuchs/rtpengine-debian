@@ -5,7 +5,7 @@ set -x
 
 TAG="$1"
 BUILDDIR=~/tmp
-REPO=~/htdocs/dfx.at/rtpengine/latest
+REPO=~/htdocs/dfx.at/rtpengine/8.5
 RELEASES='sid, bookworm,~bpo12+1 bullseye,~bpo11+1 buster,~bpo10+1'
 ARCHS='amd64 i386'
 
@@ -27,7 +27,7 @@ test -d "$OUTPUT_DIR"
 
 cd build.$$
 
-"$RTPENGINE_DEBIAN_SRCDIR"/latest/create-source-package
+"$RTPENGINE_DEBIAN_SRCDIR"/8.5/create-source-package
 
 for RELEASE in $RELEASES; do
 	IFS=, read -a REL_NAMES <<< "$RELEASE"
@@ -39,7 +39,7 @@ for RELEASE in $RELEASES; do
 	export FULL_VER
 	mkdir "$RELEASE"
 	cd "$RELEASE"
-	"$RTPENGINE_DEBIAN_SRCDIR"/latest/create-debian-build
+	"$RTPENGINE_DEBIAN_SRCDIR"/8.5/create-debian-build
 	done_all=false
 	for ARCH in $ARCHS; do
 		sudo cowbuilder --build --buildplace ~/var/cache/pbuilder/build --buildresult "$OUTPUT_DIR" --basepath ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".cow --aptcache ~/var/cache/aptcache rtpengine_"$FULL_VER".dsc

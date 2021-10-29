@@ -5,7 +5,7 @@ set -x
 
 LAST_BUILD_ID=~/.rtpe.last.build.id
 BUILDDIR=~/tmp
-REPO=~/htdocs/dfx.at/rtpengine-debian
+REPO=~/htdocs/dfx.at/rtpengine/beta
 RELEASES='sid, bookworm,~bpo12+1 bullseye,~bpo11+1 buster,~bpo10+1'
 ARCHS='amd64 i386'
 
@@ -53,22 +53,22 @@ for RELEASE in $RELEASES; do
 	"$RTPENGINE_DEBIAN_SRCDIR"/beta/create-debian-build
 	done_all=false
 	for ARCH in $ARCHS; do
-		sudo cowbuilder --build --buildplace ~/var/cache/pbuilder/build --buildresult "$OUTPUT_DIR" --basepath ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".cow --aptcache ~/var/cache/aptcache rtpengine-beta_"$FULL_VER".dsc
-		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-beta-daemon_"$FULL_VER"_"$ARCH".deb
-		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-beta-daemon-dbgsym_"$FULL_VER"_"$ARCH".deb
-		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-beta-iptables_"$FULL_VER"_"$ARCH".deb
-		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-beta-iptables-dbgsym_"$FULL_VER"_"$ARCH".deb
-		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-beta-recording-daemon_"$FULL_VER"_"$ARCH".deb
-		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-beta-recording-daemon-dbgsym_"$FULL_VER"_"$ARCH".deb
+		sudo cowbuilder --build --buildplace ~/var/cache/pbuilder/build --buildresult "$OUTPUT_DIR" --basepath ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".cow --aptcache ~/var/cache/aptcache rtpengine_"$FULL_VER".dsc
+		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-daemon_"$FULL_VER"_"$ARCH".deb
+		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-daemon-dbgsym_"$FULL_VER"_"$ARCH".deb
+		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-iptables_"$FULL_VER"_"$ARCH".deb
+		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-iptables-dbgsym_"$FULL_VER"_"$ARCH".deb
+		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-recording-daemon_"$FULL_VER"_"$ARCH".deb
+		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-recording-daemon-dbgsym_"$FULL_VER"_"$ARCH".deb
 		if ! $done_all; then
-			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-beta_"$FULL_VER"_all.deb
-			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-beta-kernel-dkms_"$FULL_VER"_all.deb
-			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-beta-kernel-source_"$FULL_VER"_all.deb
-			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-beta-utils_"$FULL_VER"_all.deb
+			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine_"$FULL_VER"_all.deb
+			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-kernel-dkms_"$FULL_VER"_all.deb
+			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-kernel-source_"$FULL_VER"_all.deb
+			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-utils_"$FULL_VER"_all.deb
 			done_all=true
 		fi
 	done
-	reprepro -Vb "$REPO" -C main includedsc "$RELEASE" "$OUTPUT_DIR"/rtpengine-beta_"$FULL_VER".dsc
+	reprepro -Vb "$REPO" -C main includedsc "$RELEASE" "$OUTPUT_DIR"/rtpengine_"$FULL_VER".dsc
 	cd ..
 done
 

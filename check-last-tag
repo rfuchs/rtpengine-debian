@@ -17,6 +17,7 @@ if diff -q "$NEW_FILE" "$CUR_FILE"; then
 	exit 0
 fi
 
-
+TAG=$(<"$NEW_FILE")
+"$RTPENGINE_DEBIAN_SRCDIR"/latest/build-all "$TAG"
 
 cp -a "$NEW_FILE" "$CUR_FILE"
