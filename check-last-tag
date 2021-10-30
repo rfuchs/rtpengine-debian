@@ -3,21 +3,27 @@
 set -e
 set -x
 
-NEW_FILE=~/.rtpe.last_tag.new
-CUR_FILE=~/.rtpe.last_tag.cur
+TAG_FILE=~/.rtpe.all.tags.new
 
-test -f "$NEW_FILE" || exit 0
+test -f "$TAG_FILE" || exit 0
 
-if ! test -f "$CUR_FILE"; then
-	cp -a "$NEW_FILE" "$CUR_FILE"
-	exit 0
-fi
+for BRANCH in latest 8.5 9.5 10.0 10.1; do
+	CUR_FILE=~/.rtpe.branch."$BRANCH".last.tag.cur
+	if test "$BRANCH" = latest; then
+		NEW_TAG=$(grep ^mr "$TAG_FILE" | tail -n 1)
+	else
+		NEW_TAG=$(grep ^mr"$BRANCH"\\. "$TAG_FILE" | tail -n 1)
+	fi
 
-if diff -q "$NEW_FILE" "$CUR_FILE"; then
-	exit 0
-fi
+	if ! test -f "$CUR_FILE"; then
+		true
+	else
+		CUR_TAG=$(<"$CUR_FILE")
+		test -n "$NEW_TAG"
+		test "$NEW_TAG" = "$CUR_TAG" && continue
+	fi
 
-TAG=$(<"$NEW_FILE")
-"$RTPENGINE_DEBIAN_SRCDIR"/latest/build-all "$TAG"
+	"$RTPENGINE_DEBIAN_SRCDIR"/"$BRANCH"/build-all "$NEW_TAG"
 
-cp -a "$NEW_FILE" "$CUR_FILE"
+	echo "$NEW_TAG" > "$CUR_FILE"
+done
