@@ -21,6 +21,6 @@ case "$RELEASE" in
 		;;
 esac
 
-dch -v "$FULL_VER" -D "$RELEASE" -b --package rtpengine "Build version $VERSION"
+dch -v "$FULL_VER" -D "$RELEASE" -b --force-distribution --package rtpengine "Build version $VERSION"
 cd ..
 dpkg-source -b rtpengine-"$VERSION"
