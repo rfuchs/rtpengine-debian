@@ -24,7 +24,9 @@ export VERSION=$(date +%Y%m%d%H%M)
 
 export LAST_BUILD_ID
 export THIS_BUILD_ID="$LAST_BUILD_ID.new"
+export FULL_VER_ID="$LAST_BUILD_ID.full.ver"
 
+rm -f "$FULL_VER_ID"
 set +e
 "$RTPENGINE_DEBIAN_SRCDIR"/beta/create-source-package
 CODE=$?
@@ -38,6 +40,11 @@ if test "$CODE" -ne 0; then
 		exit 0
 	fi
 	exit "$CODE"
+fi
+
+if test -f "$FULL_VER_ID"; then
+	FULL_VERSION=$(<"$FULL_VER_ID")
+	VERSION=$FULL_VERSION
 fi
 
 for RELEASE in $RELEASES; do
