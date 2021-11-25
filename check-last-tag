@@ -4,16 +4,28 @@ set -e
 set -x
 
 TAG_FILE=~/.rtpe.all.tags.new
+REPO_ROOT=~/htdocs/dfx.at/rtpengine
+LATEST_LN="$REPO_ROOT"/latest
 
 test -f "$TAG_FILE" || exit 0
 
-for BRANCH in latest 8.5 9.5 10.0 10.1; do
-	CUR_FILE=~/.rtpe.branch."$BRANCH".last.tag.cur
-	if test "$BRANCH" = latest; then
-		NEW_TAG=$(grep ^mr "$TAG_FILE" | tail -n 1)
-	else
-		NEW_TAG=$(grep ^mr"$BRANCH"\\. "$TAG_FILE" | tail -n 1)
+declare -A BUILD=( ["8.5"]="true" ["9.5"]="true" )
+
+readarray -t LAST_X_BRANCHES < <(cat "$TAG_FILE" | perl -pe 's/^mr(\d+)\.(\d+)\..*/$1.$2/' | sort -nu | tail -n 3)
+
+for BRANCH in "${LAST_X_BRANCHES[@]}"; do
+	if ! test -d "$REPO_ROOT"/"$BRANCH"; then
+		echo Repo root "$REPO_ROOT"/"$BRANCH" does not exist
+		continue
 	fi
+
+	BUILD["$BRANCH"]=true
+	LAST_BRANCH=$BRANCH
+done
+
+for BRANCH in "${!BUILD[@]}"; do
+	CUR_FILE=~/.rtpe.branch."$BRANCH".last.tag.cur
+	NEW_TAG=$(grep ^mr"$BRANCH"\\. "$TAG_FILE" | tail -n 1)
 
 	if ! test -f "$CUR_FILE"; then
 		true
@@ -27,3 +39,9 @@ for BRANCH in latest 8.5 9.5 10.0 10.1; do
 
 	echo "$NEW_TAG" > "$CUR_FILE"
 done
+
+LATEST_LINK=$(readlink "$LATEST_LN" || true)
+if ! test "$LATEST_LINK" = "$LAST_BRANCH"; then
+	rm "$LATEST_LN" || true
+	ln -s "$LAST_BRANCH" "$LATEST_LN"
+fi
