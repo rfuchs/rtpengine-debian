@@ -12,15 +12,15 @@ test -f ../rtpengine_"$VERSION".orig.tar.gz
 test -d ../rtpengine-"$VERSION"
 
 cp -va ../rtpengine_"$VERSION".orig.tar.gz ../rtpengine-"$VERSION" .
-cd rtpengine-"$VERSION"
 
-case "$RELEASE" in
-	buster)
-		# bcg729 is not available in buster
-		sed -i '/bcg729/d' debian/control
-		;;
-esac
+pushd rtpengine-"$VERSION"
 
-dch -v "$FULL_VER" -D "$RELEASE" --force-distribution --package rtpengine "Beta build"
-cd ..
+test -d pkg/deb/"$RELEASE"
+test ! -e debian
+cp -vr pkg/deb/"$RELEASE" debian
+
+dch -v "$FULL_VER" --create -D "$RELEASE" --force-distribution --package rtpengine "Beta build"
+
+popd
+
 dpkg-source -b rtpengine-"$VERSION"
