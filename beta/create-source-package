@@ -127,13 +127,14 @@ diff -ur debian.orig/control debian/control
 + ngcp-rtpengine-utils,
  Description: scripts and Perl modules for NGCP rtpengine
   This package contains scripts and Perl modules for NGCP rtpengine
-diff -ur debian.orig/control.modules.in debian/control.modules.in
---- debian.orig/control.modules.in	2021-10-29 10:08:34.383082012 -0400
-+++ debian/control.modules.in	2021-10-29 10:08:39.651066407 -0400
-@@ -13,6 +13,8 @@
+diff --git a/debian/control.modules.in b/debian/control.modules.in
+index 2e726a2e..2f4a31db 100644
+--- a/debian/control.modules.in
++++ b/debian/control.modules.in
+@@ -11,6 +11,8 @@ Package: ngcp-rtpengine-kernel-modules-_KVERS_
+ Architecture: any
+ Depends:
   linux-modules-_KVERS_ | linux-image-_KVERS_,
- Provides:
-  rtpengine-kernel,
 +Conflicts:
 + ngcp-rtpengine-kernel-modules-_KVERS_,
  Description: IPtables kernel module for the NGCP media proxy
