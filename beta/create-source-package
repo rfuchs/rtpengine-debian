@@ -44,7 +44,6 @@ test ! -e rtpengine-"$VERSION"
 mkdir rtpengine-"$VERSION"
 
 cp -va rtpengine/. rtpengine-"$VERSION"
-rm -rf rtpengine-"$VERSION"/debian
 tar -czf rtpengine_"$VERSION".orig.tar.gz rtpengine-"$VERSION"
 rm -rf rtpengine
 

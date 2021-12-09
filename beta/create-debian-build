@@ -15,11 +15,19 @@ cp -va ../rtpengine_"$VERSION".orig.tar.gz ../rtpengine-"$VERSION" .
 
 pushd rtpengine-"$VERSION"
 
-test -d pkg/deb/"$RELEASE"
-test ! -e debian
-cp -vr pkg/deb/"$RELEASE" debian
+test -f pkg/deb/backports/"$RELEASE"
+test -d debian
+pushd pkg/deb
+./generator.sh
+./backports/"$RELEASE"
+test -d "$RELEASE"
+rm -rf debian
+popd
+rm -rf debian
+mv -v pkg/deb/"$RELEASE" debian
+echo '3.0 (quilt)' > debian/source/format
 
-dch -v "$FULL_VER" --create -D "$RELEASE" --force-distribution --package rtpengine "Beta build"
+dch -v "$FULL_VER" -D "$RELEASE" --force-distribution --package rtpengine "Beta build"
 
 popd
 
