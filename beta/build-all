@@ -75,6 +75,7 @@ for RELEASE in $RELEASES; do
 			done_all=true
 		fi
 	done
+	debsign "$OUTPUT_DIR"/rtpengine_"$FULL_VER".dsc
 	reprepro -Vb "$REPO" -C main includedsc "$RELEASE" "$OUTPUT_DIR"/rtpengine_"$FULL_VER".dsc
 	cd ..
 done

@@ -67,6 +67,7 @@ for RELEASE in $RELEASES; do
 	done
 
 	if test -e "$OUTPUT_DIR"/rtpengine_"$FULL_VER".dsc; then
+		debsign "$OUTPUT_DIR"/rtpengine_"$FULL_VER".dsc
 		reprepro -Vb "$REPO" -C main includedsc "$RELEASE" "$OUTPUT_DIR"/rtpengine_"$FULL_VER".dsc
 	fi
 

@@ -40,6 +40,8 @@ if test -n "$FULL_VER_ID"; then
 	VERSION=$FULL_VERSION
 fi
 
+sed -i 's/^Maintainer: .*/Maintainer: Richard Fuchs <dfx@dfx.at>/' rtpengine/debian/control*
+
 test ! -e rtpengine-"$VERSION"
 mkdir rtpengine-"$VERSION"
 
