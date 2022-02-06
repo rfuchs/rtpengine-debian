@@ -1,0 +1,43 @@
+#!/bin/bash
+
+set -e
+
+LOCKFILE=~/.arm-includer.lock
+exec 99>> "$LOCKFILE"
+flock -n 99 || exit 0
+
+INPUT=~/var/arm-results
+REPO=~/htdocs/dfx.at/rtpengine
+
+for D in "$INPUT"/*; do
+	if [[ "$D" =~ \.([a-z]+)$ ]]; then
+		DIST=${BASH_REMATCH[1]}
+	else
+		continue
+	fi
+
+	for F in "$D"/*; do
+		case "$F" in
+			*_armhf.deb)
+				;;
+			*)
+				rm -f "$F" || true
+				continue
+				;;
+		esac
+
+		if [[ "$F" =~ _[0-9]+~ ]]; then
+			REL=beta
+		elif [[ "$F" =~ _([0-9]+\.[0-9]+)\.[0-9]+\.[0-9]+- ]]; then
+			REL=${BASH_REMATCH[1]}
+		else
+			rm -f "$F"
+			continue
+		fi
+
+		reprepro -Vb "$REPO"/"$REL" -C main includedeb "$DIST" "$F"
+		rm -f "$F"
+	done
+
+	rmdir "$D"
+done
