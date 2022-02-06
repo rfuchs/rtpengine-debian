@@ -10,6 +10,8 @@ REPO=~/htdocs/dfx.at/rtpengine/"$BRANCH"
 RELEASES='sid, bookworm,~bpo12+1 bullseye,~bpo11+1 buster,~bpo10+1'
 ARCHS='amd64 i386'
 
+BUILDNUM=${BUILDNUM:-1}
+
 test -n "$RTPENGINE_DEBIAN_SRCDIR"
 test -n "$TAG"
 
@@ -39,7 +41,7 @@ for RELEASE in $RELEASES; do
 	IFS=, read -a REL_NAMES <<< "$RELEASE"
 	RELEASE=${REL_NAMES[0]}
 	REL_CODE=${REL_NAMES[1]}
-	FULL_VER="$VERSION"-1"$REL_CODE"
+	FULL_VER="$VERSION"-"$BUILDNUM""$REL_CODE"
 	export RELEASE
 	export REL_CODE
 	export FULL_VER
