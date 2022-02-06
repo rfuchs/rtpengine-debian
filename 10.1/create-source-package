@@ -13,7 +13,7 @@ mkdir rtpengine-"$VERSION"
 cp -va rtpengine/. rtpengine-"$VERSION"
 
 pushd rtpengine-"$VERSION"
-rename 's/ngcp-rtpengine/rtpengine/' debian/ngcp-rtpengine*
+rename 's/ngcp-rtpengine/rtpengine/g' debian/ngcp-rtpengine*
 find debian -type f -print0 | xargs -0 sed -i 's/ngcp-rtpengine/rtpengine/g'
 echo '3.0 (quilt)' > debian/source/format
 
