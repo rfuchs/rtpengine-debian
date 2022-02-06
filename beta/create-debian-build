@@ -32,5 +32,3 @@ dch -v "$FULL_VER" -D "$RELEASE" --force-distribution --package rtpengine "Beta 
 popd
 
 dpkg-source -b rtpengine-"$VERSION"
-
-test -d ~/var/arm-queue && echo beta/pool/main/r/rtpengine/rtpengine_"$FULL_VER".dsc > ~/var/arm-queue/rtpengine.beta."$RELEASE" || true

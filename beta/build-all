@@ -77,6 +77,11 @@ for RELEASE in $RELEASES; do
 	done
 	debsign "$OUTPUT_DIR"/rtpengine_"$FULL_VER".dsc
 	reprepro -Vb "$REPO" -C main includedsc "$RELEASE" "$OUTPUT_DIR"/rtpengine_"$FULL_VER".dsc
+
+	if test -d ~/var/arm-queue; then
+		echo beta/pool/main/r/rtpengine/rtpengine_"$FULL_VER".dsc > ~/var/arm-queue/.rtpengine.beta."$RELEASE".$$ || true
+		mv ~/var/arm-queue/.rtpengine.beta."$RELEASE".$$ ~/var/arm-queue/rtpengine.beta."$RELEASE" || true
+	fi
 	cd ..
 done
 
