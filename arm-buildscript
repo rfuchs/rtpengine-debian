@@ -7,6 +7,11 @@ LOCKFILE=~/.buildscript.lock
 exec 99>> "$LOCKFILE"
 flock -n 99 || exit 0
 
+BUILDER_LOCK=~/.pbuilder.lock
+exec 98>> "$BUILDER_LOCK"
+flock 98
+
+
 MIRROR=http://raspbian.freemirror.org/raspbian/
 BASE_URL=https://dfx.at/rtpengine
 
@@ -17,8 +22,6 @@ test -d ~/dfx.at-var
 mv -v ~/dfx.at-var/arm-queue/* ~/var/arm-queue/ || true
 
 for DIST in $DISTS; do
-	sudo cowbuilder --update --mirror "$MIRROR" --override-config --distribution "$DIST" --basepath ~/var/cache/pbuilder/base-"$DIST"-armhf.cow --aptcache ~/var/cache/aptcache --buildplace ~/var/cache/pbuilder/build
-
 	for QF in ~/var/arm-queue/*."$DIST"; do
 		test -f "$QF" || continue
 
