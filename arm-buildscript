@@ -13,7 +13,6 @@ flock 98
 
 
 MIRROR=http://raspbian.freemirror.org/raspbian/
-BASE_URL=https://dfx.at/rtpengine
 
 DISTS='bullseye buster bookworm'
 
@@ -25,8 +24,8 @@ for DIST in $DISTS; do
 	for QF in ~/var/arm-queue/*."$DIST"; do
 		test -f "$QF" || continue
 
-		URL="$BASE_URL"/$(<"$QF")
-		#echo url "$URL"
+		URL=$(<"$QF")
+		FN=$(basename "$QF")
 
 		BUILDDIR=~/tmp/build.$RANDOM
 		OUTPUTDIR=~/tmp/artefacts.$RANDOM
@@ -43,7 +42,7 @@ for DIST in $DISTS; do
 		MVDIR=~/dfx.at-var/arm-results/.results.$RANDOM
 		mkdir "$MVDIR"
 		mv -v "$OUTPUTDIR"/* "$MVDIR"
-		mv -v "$MVDIR" ~/dfx.at-var/arm-results/results.$RANDOM."$DIST"
+		mv -v "$MVDIR" ~/dfx.at-var/arm-results/results."$FN".$RANDOM."$DIST"
 		rmdir "$OUTPUTDIR"
 
 		rm -f "$QF"
