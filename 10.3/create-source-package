@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -e
+set -x
+
+git clone --branch "$TAG" https://github.com/sipwise/rtpengine.git
+
+sed -i 's/^Maintainer: .*/Maintainer: Richard Fuchs <dfx@dfx.at>/' rtpengine/debian/control*
+
+test ! -e rtpengine-"$VERSION"
+mkdir rtpengine-"$VERSION"
+
+cp -va rtpengine/. rtpengine-"$VERSION"
+tar -czf rtpengine_"$VERSION".orig.tar.gz rtpengine-"$VERSION"
+rm -rf rtpengine
+
+echo export VERSION="$VERSION"
