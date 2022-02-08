@@ -7,14 +7,29 @@ exec 99>> "$LOCKFILE"
 flock -n 99 || exit 0
 
 INPUT=~/var/arm-results
-REPO=~/htdocs/dfx.at/rtpengine
 
-for D in "$INPUT"/*; do
-	if [[ "$D" =~ \.([a-z]+)$ ]]; then
+for D in "$INPUT"/results.*; do
+	BD=$(basename "$D")
+
+	if [[ "$BD" =~ \.([a-z]+)$ ]]; then
 		DIST=${BASH_REMATCH[1]}
 	else
 		continue
 	fi
+
+	if [[ "$BD" =~ ^results\.([a-z]+)\. ]]; then
+		PKG=${BASH_REMATCH[1]}
+	else
+		continue
+	fi
+
+	case "$PKG" in
+		rtpengine)
+			REPO=~/htdocs/dfx.at/rtpengine
+			;;
+		*)
+			continue
+	esac
 
 	for F in "$D"/*; do
 		case "$F" in
