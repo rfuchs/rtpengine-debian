@@ -14,7 +14,7 @@ flock 98
 
 MIRROR=http://raspbian.freemirror.org/raspbian/
 
-DISTS='bullseye buster bookworm'
+DISTS='bullseye buster bookworm stretch'
 
 
 test -d ~/dfx.at-var
