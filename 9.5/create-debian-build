@@ -4,6 +4,7 @@ set -e
 set -x
 
 test -n "$RELEASE"
+test -n "$REL_NAME"
 test -n "$RTPENGINE_DEBIAN_SRCDIR"
 test -n "$VERSION" # VERSION=$(date +%Y%m%d%H%H)
 test -n "$FULL_VER"
@@ -27,7 +28,7 @@ rm -rf debian
 mv -v pkg/deb/"$RELEASE" debian
 echo '3.0 (quilt)' > debian/source/format
 
-dch -v "$FULL_VER" -D "$RELEASE" -b --force-distribution --package rtpengine "Build version $VERSION"
+dch -v "$FULL_VER" -D "$REL_NAME" -b --force-distribution --package rtpengine "Build version $VERSION"
 
 popd
 

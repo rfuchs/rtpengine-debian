@@ -42,9 +42,14 @@ for RELEASE in $RELEASES; do
 	RELEASE=${REL_NAMES[0]}
 	REL_CODE=${REL_NAMES[1]}
 	FULL_VER="$VERSION"-"$BUILDNUM""$REL_CODE"
+	REL_NAME=$RELEASE
+	if test "$REL_NAME" = sid; then
+		REL_NAME=unstable
+	fi
 	export RELEASE
 	export REL_CODE
 	export FULL_VER
+	export REL_NAME
 	mkdir "$RELEASE"
 	cd "$RELEASE"
 	"$RTPENGINE_DEBIAN_SRCDIR"/"$BRANCH"/create-debian-build
