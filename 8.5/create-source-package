@@ -108,6 +108,8 @@ diff -ur debian.orig/control.modules.in debian/control.modules.in
 EOF
 
 popd
+
+rm -rf rtpengine-"$VERSION"/.git
 tar -czf rtpengine_"$VERSION".orig.tar.gz rtpengine-"$VERSION"
 rm -rf rtpengine
 
