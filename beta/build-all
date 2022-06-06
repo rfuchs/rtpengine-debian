@@ -75,7 +75,6 @@ for RELEASE in $RELEASES; do
 		if ! $done_all; then
 			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine_"$FULL_VER"_all.deb
 			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-kernel-dkms_"$FULL_VER"_all.deb
-			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-kernel-source_"$FULL_VER"_all.deb
 			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-utils_"$FULL_VER"_all.deb
 			done_all=true
 		fi
