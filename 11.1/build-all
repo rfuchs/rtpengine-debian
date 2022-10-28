@@ -1,0 +1,90 @@
+#!/bin/bash
+
+set -e
+set -x
+
+TAG="$1"
+BRANCH=11.1
+BUILDDIR=~/tmp
+REPO=~/htdocs/dfx.at/rtpengine/"$BRANCH"
+RELEASES='sid, bookworm,~bpo12+1 bullseye,~bpo11+1 buster,~bpo10+1 stretch,~bpo9+1'
+ARCHS='amd64 i386'
+
+BUILDNUM=${BUILDNUM:-1}
+
+test -n "$RTPENGINE_DEBIAN_SRCDIR"
+test -n "$TAG"
+
+export TAG
+
+VERSION=${TAG#mr}
+test -n "$VERSION"
+export VERSION
+
+cd "$BUILDDIR"
+mkdir build.$$
+
+OUTPUT_DIR="$BUILDDIR/artefacts.$$"
+mkdir artefacts.$$
+test -d "$OUTPUT_DIR"
+
+cd build.$$
+
+if test -e "$REPO"/pool/main/r/rtpengine/rtpengine_"$VERSION".orig.tar.gz; then
+	cp "$REPO"/pool/main/r/rtpengine/rtpengine_"$VERSION".orig.tar.gz .
+	tar -xf rtpengine_"$VERSION".orig.tar.gz
+else
+	"$RTPENGINE_DEBIAN_SRCDIR"/"$BRANCH"/create-source-package
+fi
+
+for RELEASE in $RELEASES; do
+	IFS=, read -a REL_NAMES <<< "$RELEASE"
+	RELEASE=${REL_NAMES[0]}
+	REL_CODE=${REL_NAMES[1]}
+	FULL_VER="$VERSION"-"$BUILDNUM""$REL_CODE"
+	REL_NAME=$RELEASE
+	if test "$REL_NAME" = sid; then
+		REL_NAME=unstable
+	fi
+	export RELEASE
+	export REL_CODE
+	export FULL_VER
+	export REL_NAME
+	mkdir "$RELEASE"
+	cd "$RELEASE"
+	"$RTPENGINE_DEBIAN_SRCDIR"/"$BRANCH"/create-debian-build
+	for ARCH in $ARCHS; do
+		if test -e "$REPO"/pool/main/r/rtpengine/rtpengine-daemon_"$FULL_VER"_"$ARCH".deb; then
+			continue
+		fi
+
+		sudo cowbuilder --build --buildplace ~/var/cache/pbuilder/build --buildresult "$OUTPUT_DIR" --basepath ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".cow --aptcache ~/var/cache/aptcache rtpengine_"$FULL_VER".dsc
+		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-daemon_"$FULL_VER"_"$ARCH".deb
+		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-daemon-dbgsym_"$FULL_VER"_"$ARCH".deb
+		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-iptables_"$FULL_VER"_"$ARCH".deb
+		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-iptables-dbgsym_"$FULL_VER"_"$ARCH".deb
+		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-recording-daemon_"$FULL_VER"_"$ARCH".deb
+		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-recording-daemon-dbgsym_"$FULL_VER"_"$ARCH".deb
+		if ! test -e "$REPO"/pool/main/r/rtpengine/rtpengine_"$FULL_VER"_all.deb; then
+			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine_"$FULL_VER"_all.deb
+			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-kernel-dkms_"$FULL_VER"_all.deb
+			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-utils_"$FULL_VER"_all.deb
+		fi
+	done
+
+	if test -e "$OUTPUT_DIR"/rtpengine_"$FULL_VER".dsc; then
+		debsign "$OUTPUT_DIR"/rtpengine_"$FULL_VER".dsc
+		reprepro -Vb "$REPO" -C main includedsc "$RELEASE" "$OUTPUT_DIR"/rtpengine_"$FULL_VER".dsc
+
+		if test -d ~/var/arm-queue; then
+			echo https://dfx.at/rtpengine/"$BRANCH"/pool/main/r/rtpengine/rtpengine_"$FULL_VER".dsc > ~/var/arm-queue/.rtpengine."$BRANCH"."$RELEASE".$$ || true
+			mv ~/var/arm-queue/.rtpengine."$BRANCH"."$RELEASE".$$ ~/var/arm-queue/rtpengine."$BRANCH"."$RELEASE" || true
+		fi
+	fi
+
+	cd ..
+done
+
+cd ..
+rm -rf build.$$
+rm -rf "$OUTPUT_DIR"
