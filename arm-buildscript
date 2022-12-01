@@ -12,9 +12,11 @@ exec 98>> "$BUILDER_LOCK"
 flock 98
 
 
-MIRROR=http://raspbian.freemirror.org/raspbian/
+MIRROR=http://deb.debian.org/debian
+EXTRA_MIRROR=http://archive.raspberrypi.org/debian/
 
-DISTS='bullseye buster bookworm stretch'
+DISTS='bullseye buster stretch'
+ARCHS='armhf arm64'
 
 
 test -d ~/dfx.at-var
@@ -27,23 +29,27 @@ for DIST in $DISTS; do
 		URL=$(<"$QF")
 		FN=$(basename "$QF")
 
-		BUILDDIR=~/tmp/build.$RANDOM
-		OUTPUTDIR=~/tmp/artefacts.$RANDOM
+		for ARCH in $ARCHS; do
 
-		mkdir "$BUILDDIR"
-		mkdir "$OUTPUTDIR"
+			BUILDDIR=~/tmp/build.$RANDOM
+			OUTPUTDIR=~/tmp/artefacts.$RANDOM
 
-		cd "$BUILDDIR"
-		dget --allow-unauthenticated "$URL"
-		sudo cowbuilder --build --mirror "$MIRROR" --override-config --distribution "$DIST" --buildplace ~/var/cache/pbuilder/build --buildresult "$OUTPUTDIR" --basepath ~/var/cache/pbuilder/base-"$DIST"-armhf.cow --aptcache ~/var/cache/aptcache *.dsc
-		cd ..
-		rm -rf "$BUILDDIR"
+			mkdir "$BUILDDIR"
+			mkdir "$OUTPUTDIR"
 
-		MVDIR=~/dfx.at-var/arm-results/.results.$RANDOM
-		mkdir "$MVDIR"
-		mv -v "$OUTPUTDIR"/* "$MVDIR"
-		mv -v "$MVDIR" ~/dfx.at-var/arm-results/results."$FN".$RANDOM."$DIST"
-		rmdir "$OUTPUTDIR"
+			cd "$BUILDDIR"
+			dget --allow-unauthenticated "$URL"
+			sudo cowbuilder --build --mirror "$MIRROR" --othermirror="deb $EXTRA_MIRROR $DIST main" --override-config --distribution "$DIST" --buildplace ~/var/cache/pbuilder/build --buildresult "$OUTPUTDIR" --basepath ~/var/cache/pbuilder/base-"$DIST"-$ARCH.cow --aptcache ~/var/cache/aptcache *.dsc
+			cd ..
+			rm -rf "$BUILDDIR"
+
+			MVDIR=~/dfx.at-var/arm-results/.results.$RANDOM
+			mkdir "$MVDIR"
+			mv -v "$OUTPUTDIR"/* "$MVDIR"
+			mv -v "$MVDIR" ~/dfx.at-var/arm-results/results."$FN".$RANDOM."$DIST"
+			rmdir "$OUTPUTDIR"
+
+		done
 
 		rm -f "$QF"
 	done
