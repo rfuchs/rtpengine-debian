@@ -3,6 +3,8 @@
 set -e
 set -x
 
+declare -a errors
+
 TAG="$1"
 BRANCH=11.1
 BUILDDIR=~/tmp
@@ -37,6 +39,8 @@ else
 	"$RTPENGINE_DEBIAN_SRCDIR"/"$BRANCH"/create-source-package
 fi
 
+set +x
+
 for RELEASE in $RELEASES; do
 	IFS=, read -a REL_NAMES <<< "$RELEASE"
 	RELEASE=${REL_NAMES[0]}
@@ -58,17 +62,32 @@ for RELEASE in $RELEASES; do
 			continue
 		fi
 
-		sudo cowbuilder --build --buildplace ~/var/cache/pbuilder/build --buildresult "$OUTPUT_DIR" --basepath ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".cow --aptcache ~/var/cache/aptcache rtpengine_"$FULL_VER".dsc
-		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-daemon_"$FULL_VER"_"$ARCH".deb
-		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-daemon-dbgsym_"$FULL_VER"_"$ARCH".deb
-		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-iptables_"$FULL_VER"_"$ARCH".deb
-		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-iptables-dbgsym_"$FULL_VER"_"$ARCH".deb
-		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-recording-daemon_"$FULL_VER"_"$ARCH".deb
-		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-recording-daemon-dbgsym_"$FULL_VER"_"$ARCH".deb
-		if ! test -e "$REPO"/pool/main/r/rtpengine/rtpengine_"$FULL_VER"_all.deb; then
-			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine_"$FULL_VER"_all.deb
-			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-kernel-dkms_"$FULL_VER"_all.deb
-			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-utils_"$FULL_VER"_all.deb
+		echo building rtpengine_"$FULL_VER".dsc for "$RELEASE"-"$ARCH"
+		set +e
+		LOGFILE=build.log.$$."$RELEASE"-"$ARCH"
+		sudo pbuilder build --buildplace ~/var/build --buildresult "$OUTPUT_DIR" --basetgz ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".tgz --aptcache ~/var/cache/aptcache rtpengine_"$FULL_VER".dsc  > "$LOGFILE" 2>&1
+		CODE=$?
+		set -e
+
+		if test "$CODE" -eq 0; then
+			echo build successful
+			rm -f "$LOGFILE"
+			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-daemon_"$FULL_VER"_"$ARCH".deb
+			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-daemon-dbgsym_"$FULL_VER"_"$ARCH".deb
+			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-iptables_"$FULL_VER"_"$ARCH".deb
+			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-iptables-dbgsym_"$FULL_VER"_"$ARCH".deb
+			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-recording-daemon_"$FULL_VER"_"$ARCH".deb
+			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-recording-daemon-dbgsym_"$FULL_VER"_"$ARCH".deb
+			if ! test -e "$REPO"/pool/main/r/rtpengine/rtpengine_"$FULL_VER"_all.deb; then
+				reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine_"$FULL_VER"_all.deb
+				reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-kernel-dkms_"$FULL_VER"_all.deb
+				reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-utils_"$FULL_VER"_all.deb
+			fi
+		else
+			echo build failed
+			echo build log: "$LOGFILE"
+			mv "$LOGFILE" ~/
+			errors+=("build failed: $LOGFILE")
 		fi
 	done
 
@@ -88,3 +107,11 @@ done
 cd ..
 rm -rf build.$$
 rm -rf "$OUTPUT_DIR"
+
+if test ${#errors[@]} -gt 0; then
+	echo errors:
+	echo "${errors[@]}"
+	exit 1
+fi
+
+exit 0

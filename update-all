@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -e
+
+RELEASES='sid bullseye buster bookworm stretch'
+ARCHS='amd64 i386'
+
+for RELEASE in $RELEASES; do
+	for ARCH in $ARCHS; do
+		# sudo cowbuilder --create --basepath ~/var/cache/pbuilder/base-bookworm-i386.cow --distribution bookworm --architecture i386 --aptcache ~/var/cache/aptcache
+		sudo pbuilder update --basetgz ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".tgz --aptcache ~/var/cache/aptcache --buildplace ~/var/build
+	done
+done
