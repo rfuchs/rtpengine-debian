@@ -3,10 +3,6 @@
 set -e
 set -x
 
-LOCKFILE=~/.pbuilder.lock
-exec 99>> "$LOCKFILE"
-flock 99
-
 MIRROR=http://deb.debian.org/debian
 EXTRA_MIRROR=http://archive.raspberrypi.org/debian/
 BASE_URL=https://dfx.at/rtpengine
