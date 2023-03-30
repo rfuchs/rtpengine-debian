@@ -3,6 +3,7 @@
 set -e
 set -x
 
+declare -a errors
 
 MIRROR=http://deb.debian.org/debian
 EXTRA_MIRROR=http://archive.raspberrypi.org/debian/
@@ -31,18 +32,42 @@ for DIST in $DISTS; do
 
 			cd "$BUILDDIR"
 			dget --allow-unauthenticated "$URL"
-			sudo cowbuilder --build --mirror "$MIRROR" --othermirror="deb $EXTRA_MIRROR $DIST main" --override-config --distribution "$DIST" --buildplace ~/var/cache/pbuilder/build --buildresult "$OUTPUTDIR" --basepath ~/var/cache/pbuilder/base-"$DIST"-$ARCH.cow --aptcache ~/var/cache/aptcache *.dsc
+
+			set +e
+			LOGFILE=build.log.$$."$DIST"-"$ARCH"
+			sudo cowbuilder --build --mirror "$MIRROR" --othermirror="deb $EXTRA_MIRROR $DIST main" --override-config --distribution "$DIST" --buildplace ~/var/cache/pbuilder/build --buildresult "$OUTPUTDIR" --basepath ~/var/cache/pbuilder/base-"$DIST"-$ARCH.cow --aptcache ~/var/cache/aptcache *.dsc > "../$LOGFILE" 2>&1
+			CODE=$?
+			set -e
+
 			cd ..
 			rm -rf "$BUILDDIR"
 
-			MVDIR=~/dfx.at-var/arm-results/.results.$RANDOM
-			mkdir "$MVDIR"
-			mv -v "$OUTPUTDIR"/* "$MVDIR"
-			mv -v "$MVDIR" ~/dfx.at-var/arm-results/results."$FN".$RANDOM."$DIST"
-			rmdir "$OUTPUTDIR"
+			if test "$CODE" -eq 0; then
+				MVDIR=~/dfx.at-var/arm-results/.results.$RANDOM
+				mkdir "$MVDIR"
+				mv -v "$OUTPUTDIR"/* "$MVDIR"
+				mv -v "$MVDIR" ~/dfx.at-var/arm-results/results."$FN".$RANDOM."$DIST"
+				rmdir "$OUTPUTDIR"
+				rm -f "$LOGFILE"
+
+			else
+				echo build failed
+				echo build log: "$LOGFILE"
+				mv "$LOGFILE" ~/
+				errors+=("build failed: $LOGFILE")
+			fi
 
 		done
 
 		rm -f "$QF"
 	done
 done
+
+
+if test ${#errors[@]} -gt 0; then
+	echo errors:
+	echo "${errors[@]}"
+	exit 1
+fi
+
+exit 0
