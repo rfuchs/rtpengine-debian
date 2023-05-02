@@ -3,15 +3,20 @@
 set -e
 set -x
 
-MIRROR=http://deb.debian.org/debian
 EXTRA_MIRROR=http://archive.raspberrypi.org/debian/
 BASE_URL=https://dfx.at/rtpengine
 
-DISTS='stretch bullseye buster'
+DISTS='stretch bullseye buster bookworm'
 ARCHS='armhf arm64'
 
+declare -A MIRRORS
+MIRRORS[stretch]=http://archive.debian.org/debian/
 
 for DIST in $DISTS; do
+	MIRROR=http://deb.debian.org/debian
+	if [ -n "$MIRRORS[$DIST]" ]; then
+		MIRROR=${MIRRORS[$DIST]}
+	fi
 	for ARCH in $ARCHS; do
 		sudo cowbuilder --update --mirror "$MIRROR" --othermirror="deb $EXTRA_MIRROR $DIST main" --override-config --distribution "$DIST" --basepath ~/var/cache/pbuilder/base-"$DIST"-"$ARCH".cow --aptcache ~/var/cache/aptcache --buildplace ~/var/cache/pbuilder/build
 	done
