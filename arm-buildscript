@@ -8,7 +8,7 @@ declare -a errors
 MIRROR=http://deb.debian.org/debian
 EXTRA_MIRROR=http://archive.raspberrypi.org/debian/
 
-DISTS='bullseye buster stretch'
+DISTS='bullseye buster stretch bookworm'
 ARCHS='armhf arm64'
 
 
