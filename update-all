@@ -5,9 +5,16 @@ set -e
 RELEASES='sid bullseye buster bookworm stretch'
 ARCHS='amd64 i386'
 
+declare -A MIRRORS
+MIRRORS[stretch]=http://archive.debian.org/debian/
+
 for RELEASE in $RELEASES; do
+	MIRROR=http://deb.debian.org/debian
+	if [ -n "$MIRRORS[$RELEASE]" ]; then
+		MIRROR=${MIRRORS[$RELEASE]}
+	fi
 	for ARCH in $ARCHS; do
 		# sudo cowbuilder --create --basepath ~/var/cache/pbuilder/base-bookworm-i386.cow --distribution bookworm --architecture i386 --aptcache ~/var/cache/aptcache
-		sudo pbuilder update --basetgz ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".tgz --aptcache ~/var/cache/aptcache --buildplace ~/var/build
+		sudo pbuilder update --basetgz ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".tgz --distribution "$RELEASE" --mirror "$MIRROR" --override-config --aptcache ~/var/cache/aptcache --buildplace ~/var/build
 	done
 done
