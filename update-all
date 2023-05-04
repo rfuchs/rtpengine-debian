@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e
+set -x
 
 RELEASES='sid bullseye buster bookworm stretch'
 ARCHS='amd64 i386'
@@ -10,7 +11,7 @@ MIRRORS[stretch]=http://archive.debian.org/debian/
 
 for RELEASE in $RELEASES; do
 	MIRROR=http://deb.debian.org/debian
-	if [ -n "$MIRRORS[$RELEASE]" ]; then
+	if [ -n "${MIRRORS[$RELEASE]}" ]; then
 		MIRROR=${MIRRORS[$RELEASE]}
 	fi
 	for ARCH in $ARCHS; do

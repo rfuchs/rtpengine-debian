@@ -14,7 +14,7 @@ MIRRORS[stretch]=http://archive.debian.org/debian/
 
 for DIST in $DISTS; do
 	MIRROR=http://deb.debian.org/debian
-	if [ -n "$MIRRORS[$DIST]" ]; then
+	if [ -n "${MIRRORS[$DIST]}" ]; then
 		MIRROR=${MIRRORS[$DIST]}
 	fi
 	for ARCH in $ARCHS; do
