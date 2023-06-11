@@ -10,6 +10,11 @@ fi
 git clone https://github.com/sipwise/rtpengine.git
 
 cd rtpengine
+
+if test -n "$BRANCH"; then
+	 git checkout "$BRANCH"
+fi
+
 git tag > ~/.rtpe.all.tags.$$
 git branch -r > ~/.rtpe.all.branches.$$
 cd ..
