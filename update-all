@@ -3,7 +3,7 @@
 set -e
 set -x
 
-RELEASES='sid bullseye buster bookworm stretch'
+RELEASES='sid bullseye buster bookworm stretch trixie'
 ARCHS='amd64 i386'
 
 declare -A MIRRORS
@@ -15,7 +15,7 @@ for RELEASE in $RELEASES; do
 		MIRROR=${MIRRORS[$RELEASE]}
 	fi
 	for ARCH in $ARCHS; do
-		# sudo cowbuilder --create --basepath ~/var/cache/pbuilder/base-bookworm-i386.cow --distribution bookworm --architecture i386 --aptcache ~/var/cache/aptcache
+		# sudo pbuilder --create --basetgz ~/var/cache/pbuilder/base-trixie-amd64.tgz --distribution trixie --architecture amd64 --mirror http://deb.debian.org/debian --override-config --aptcache ~/var/cache/aptcache --buildplace ~/var/build
 		sudo pbuilder update --basetgz ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".tgz --distribution "$RELEASE" --mirror "$MIRROR" --override-config --aptcache ~/var/cache/aptcache --buildplace ~/var/build
 	done
 done
