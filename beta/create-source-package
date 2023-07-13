@@ -46,6 +46,7 @@ if test -n "$FULL_VER_ID"; then
 fi
 
 sed -i 's/^Maintainer: .*/Maintainer: Richard Fuchs <dfx@dfx.at>/' rtpengine/debian/control*
+sed -i 's/#!\/bin\/sh/#!\/bin\/bash/' rtpengine/utils/build_test_wrapper
 
 test ! -e rtpengine-"$VERSION"
 mkdir rtpengine-"$VERSION"
