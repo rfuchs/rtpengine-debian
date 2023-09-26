@@ -85,10 +85,13 @@ for RELEASE in $RELEASES; do
 			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-iptables-dbgsym_"$FULL_VER"_"$ARCH".deb
 			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-recording-daemon_"$FULL_VER"_"$ARCH".deb
 			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-recording-daemon-dbgsym_"$FULL_VER"_"$ARCH".deb
+			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-perftest_"$FULL_VER"_"$ARCH".deb
+			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-perftest-dbgsym_"$FULL_VER"_"$ARCH".deb
 			if ! $done_all; then
 				reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine_"$FULL_VER"_all.deb
 				reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-kernel-dkms_"$FULL_VER"_all.deb
 				reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-utils_"$FULL_VER"_all.deb
+				reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/rtpengine-perftest-data_"$FULL_VER"_all.deb
 				done_all=true
 			fi
 		else
