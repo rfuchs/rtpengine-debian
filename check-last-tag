@@ -9,7 +9,7 @@ LATEST_LN="$REPO_ROOT"/latest
 
 test -f "$TAG_FILE" || exit 0
 
-declare -A BUILD=( ["8.5"]="true" ["9.5"]="true" ["10.5"]="true" )
+declare -A BUILD=( ["8.5"]="true" ["9.5"]="true" ["10.5"]="true" ["11.5"]="true" )
 
 readarray -t LAST_X_BRANCHES < <(cat "$TAG_FILE" | perl -pe 's/^mr(\d+)\.(\d+)\..*/$1.$2/' | sort -nu | tail -n 3)
 
