@@ -13,7 +13,7 @@ for D in "$INPUT"/results.*; do
 		continue
 	fi
 
-	if [[ "$BD" =~ ^results\.([a-z]+)\. ]]; then
+	if [[ "$BD" =~ ^results\.([a-z-]+)\. ]]; then
 		PKG=${BASH_REMATCH[1]}
 	else
 		continue
@@ -22,6 +22,11 @@ for D in "$INPUT"/results.*; do
 	case "$PKG" in
 		rtpengine)
 			REPO=~/htdocs/dfx.at/rtpengine
+			SUB_REPO=true
+			;;
+		subsurface|subsurface-beta)
+			REPO=~/htdocs/dfx.at/subsurface
+			SUB_REPO=false
 			;;
 		*)
 			continue
@@ -29,7 +34,7 @@ for D in "$INPUT"/results.*; do
 
 	for F in "$D"/*; do
 		case "$F" in
-			*_armhf.deb)
+			*_armhf.deb|*_arm64.deb)
 				;;
 			*)
 				rm -f "$F" || true
@@ -37,16 +42,19 @@ for D in "$INPUT"/results.*; do
 				;;
 		esac
 
-		if [[ "$F" =~ _[0-9]+~ ]]; then
-			REL=beta
-		elif [[ "$F" =~ _([0-9]+\.[0-9]+)\.[0-9]+\.[0-9]+- ]]; then
-			REL=${BASH_REMATCH[1]}
-		else
-			rm -f "$F"
-			continue
+		if $SUB_REPO; then
+			if [[ "$F" =~ _[0-9]+~ ]]; then
+				REL=beta
+			elif [[ "$F" =~ _([0-9]+\.[0-9]+)\.[0-9]+\.[0-9]+- ]]; then
+				REL=${BASH_REMATCH[1]}
+			else
+				rm -f "$F"
+				continue
+			fi
+			REPO="$REPO"/"$REL"
 		fi
 
-		reprepro -Vb "$REPO"/"$REL" -C main includedeb "$DIST" "$F"
+		reprepro -Vb "$REPO" -C main includedeb "$DIST" "$F"
 		rm -f "$F"
 	done
 
