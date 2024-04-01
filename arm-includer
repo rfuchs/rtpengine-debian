@@ -42,6 +42,8 @@ for D in "$INPUT"/results.*; do
 				;;
 		esac
 
+		REPO_DST=$REPO
+
 		if $SUB_REPO; then
 			if [[ "$F" =~ _[0-9]+~ ]]; then
 				REL=beta
@@ -51,10 +53,10 @@ for D in "$INPUT"/results.*; do
 				rm -f "$F"
 				continue
 			fi
-			REPO="$REPO"/"$REL"
+			REPO_DST="$REPO"/"$REL"
 		fi
 
-		reprepro -Vb "$REPO" -C main includedeb "$DIST" "$F"
+		reprepro -Vb "$REPO_DST" -C main includedeb "$DIST" "$F"
 		rm -f "$F"
 	done
 
