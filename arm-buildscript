@@ -5,17 +5,24 @@ set -x
 
 declare -a errors
 
-MIRROR=http://deb.debian.org/debian
 EXTRA_MIRROR=http://archive.raspberrypi.org/debian/
 
-DISTS='bullseye buster stretch bookworm'
+#DISTS='bullseye buster stretch bookworm'
+DISTS='bullseye bookworm'
 ARCHS='armhf arm64'
+
+declare -A MIRRORS
+MIRRORS[stretch]=http://archive.debian.org/debian/
 
 
 test -d ~/dfx.at-var
 mv -v ~/dfx.at-var/arm-queue/* ~/var/arm-queue/ || true
 
 for DIST in $DISTS; do
+	MIRROR=http://deb.debian.org/debian
+	if [ -n "${MIRRORS[$DIST]}" ]; then
+		MIRROR=${MIRRORS[$DIST]}
+	fi
 	for QF in ~/var/arm-queue/*."$DIST"; do
 		test -f "$QF" || continue
 
