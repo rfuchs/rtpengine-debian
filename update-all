@@ -3,7 +3,7 @@
 set -e
 set -x
 
-RELEASES='sid bullseye buster bookworm stretch trixie'
+RELEASES='sid bullseye buster bookworm trixie'
 ARCHS='amd64 i386'
 
 declare -A MIRRORS
