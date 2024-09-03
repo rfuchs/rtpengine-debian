@@ -14,9 +14,9 @@ ARCHS='armhf arm64'
 declare -A MIRRORS
 MIRRORS[stretch]=http://archive.debian.org/debian/
 
-
-test -d ~/dfx.at-var
-mv -v ~/dfx.at-var/arm-queue/* ~/var/arm-queue/ || true
+SDIR=$1
+test -d "$SDIR"
+mv -v "$SDIR"/arm-queue/* ~/var/arm-queue/ || true
 
 for DIST in $DISTS; do
 	MIRROR=http://deb.debian.org/debian
@@ -50,10 +50,10 @@ for DIST in $DISTS; do
 			rm -rf "$BUILDDIR"
 
 			if test "$CODE" -eq 0; then
-				MVDIR=~/dfx.at-var/arm-results/.results.$RANDOM
+				MVDIR="$SDIR"/arm-results/.results.$RANDOM
 				mkdir "$MVDIR"
 				mv -v "$OUTPUTDIR"/* "$MVDIR"
-				mv -v "$MVDIR" ~/dfx.at-var/arm-results/results."$FN".$RANDOM."$DIST"
+				mv -v "$MVDIR" "$SDIR"/arm-results/results."$FN".$RANDOM."$DIST"
 				rmdir "$OUTPUTDIR"
 				rm -f "$LOGFILE"
 
