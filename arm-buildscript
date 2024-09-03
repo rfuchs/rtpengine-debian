@@ -16,14 +16,16 @@ MIRRORS[stretch]=http://archive.debian.org/debian/
 
 SDIR=$1
 test -d "$SDIR"
-mv -v "$SDIR"/arm-queue/* ~/var/arm-queue/ || true
+TDIR=$2
+test -d "$TDIR"
+mv -v "$SDIR"/arm-queue/* ~/"$TDIR"/ || true
 
 for DIST in $DISTS; do
 	MIRROR=http://deb.debian.org/debian
 	if [ -n "${MIRRORS[$DIST]}" ]; then
 		MIRROR=${MIRRORS[$DIST]}
 	fi
-	for QF in ~/var/arm-queue/*."$DIST"; do
+	for QF in ~/"$TDIR"/*."$DIST"; do
 		test -f "$QF" || continue
 
 		URL=$(<"$QF")
