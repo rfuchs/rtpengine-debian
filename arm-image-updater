@@ -1,0 +1,34 @@
+#!/bin/bash
+
+set -x
+set -e
+
+DISTS='bookworm trixie sid'
+ARCHS='arm64 armhf'
+
+cd /home/dfx/var/cache/pbuilder
+
+TD=update.$$
+mkdir update.$$
+cd update.$$
+
+for ARCH in $ARCHS; do
+	for DIST in $DISTS; do
+		mkdir $ARCH.$DIST
+		cd $ARCH.$DIST
+		nice zstdcat ../../debian-$DIST-$ARCH.tar.zst | nice tar -x
+		echo "apt update -y" > updater
+		echo "apt full-upgrade -y" >> updater
+		echo "apt autoremove --purge -y" >> updater
+		echo "apt clean -y" >> updater
+		chroot . bash ./updater
+		rm updater
+		nice tar -c . | nice zstd -T0 -9 > ../../.debian-$DIST-$ARCH.tar.zst
+		mv ../../.debian-$DIST-$ARCH.tar.zst ../../debian-$DIST-$ARCH.tar.zst
+		cd ..
+		rm -rf $ARCH.$DIST
+	done
+done
+
+cd ..
+rmdir update.$$

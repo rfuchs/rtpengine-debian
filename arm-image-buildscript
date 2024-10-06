@@ -5,26 +5,16 @@ set -x
 
 declare -a errors
 
-EXTRA_MIRROR=http://archive.raspberrypi.org/debian/
-
-#DISTS='bullseye buster stretch bookworm'
-DISTS='bullseye bookworm'
+DISTS='sid trixie bookworm'
 ARCHS='armhf arm64'
-
-declare -A MIRRORS
-MIRRORS[stretch]=http://archive.debian.org/debian/
 
 SDIR=$1
 test -d "$SDIR"
 TDIR=$2
 test -d "$TDIR"
-mv -v "$SDIR"/arm-queue/* "$TDIR"/ || true
+mv -v "$SDIR"/arm-queue2/* "$TDIR"/ || true
 
 for DIST in $DISTS; do
-	MIRROR=http://deb.debian.org/debian
-	if [ -n "${MIRRORS[$DIST]}" ]; then
-		MIRROR=${MIRRORS[$DIST]}
-	fi
 	for QF in "$TDIR"/*."$DIST"; do
 		test -f "$QF" || continue
 
@@ -32,7 +22,7 @@ for DIST in $DISTS; do
 		FN=$(basename "$QF")
 
 		for ARCH in $ARCHS; do
-
+			IMAGE=~/var/cache/pbuilder/debian-$DIST-$ARCH.tar.zst
 			BUILDDIR=~/tmp/build.$RANDOM
 			OUTPUTDIR=~/tmp/artefacts.$RANDOM
 
@@ -40,14 +30,20 @@ for DIST in $DISTS; do
 			mkdir "$OUTPUTDIR"
 
 			cd "$BUILDDIR"
+			zstdcat "$IMAGE" | tar -xv
+			mkdir build
+			cd build
+
 			dget --allow-unauthenticated "$URL"
 
 			set +e
 			LOGFILE=build.log.$$."$DIST"-"$ARCH"
-			sudo cowbuilder --build --mirror "$MIRROR" --othermirror="deb $EXTRA_MIRROR $DIST main" --override-config --distribution "$DIST" --buildplace ~/var/cache/pbuilder/build --buildresult "$OUTPUTDIR" --basepath ~/var/cache/pbuilder/base-"$DIST"-$ARCH.cow --aptcache ~/var/cache/aptcache *.dsc > "../$LOGFILE" 2>&1
+			echo debuild \*.dsc > script
+			sudo chroot . bash script > ../../"$LOGFILE" 2>&1
 			CODE=$?
 			set -e
 
+			cd .
 			cd ..
 			rm -rf "$BUILDDIR"
 
