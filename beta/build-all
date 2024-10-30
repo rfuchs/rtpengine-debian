@@ -108,6 +108,10 @@ for RELEASE in $RELEASES; do
 		echo https://dfx.at/rtpengine/beta/pool/main/r/rtpengine/rtpengine_"$FULL_VER".dsc > ~/var/arm-queue/.rtpengine.beta."$RELEASE".$$ || true
 		mv ~/var/arm-queue/.rtpengine.beta."$RELEASE".$$ ~/var/arm-queue/rtpengine.beta."$RELEASE" || true
 	fi
+	if test -d ~/var/arm-queue2; then
+		echo https://dfx.at/rtpengine/beta/pool/main/r/rtpengine/rtpengine_"$FULL_VER".dsc > ~/var/arm-queue2/.rtpengine.beta."$RELEASE".$$ || true
+		mv ~/var/arm-queue2/.rtpengine.beta."$RELEASE".$$ ~/var/arm-queue2/rtpengine.beta."$RELEASE" || true
+	fi
 	cd ..
 done
 

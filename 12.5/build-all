@@ -100,6 +100,10 @@ for RELEASE in $RELEASES; do
 			echo https://dfx.at/rtpengine/"$BRANCH"/pool/main/r/rtpengine/rtpengine_"$FULL_VER".dsc > ~/var/arm-queue/.rtpengine."$BRANCH"."$RELEASE".$$ || true
 			mv ~/var/arm-queue/.rtpengine."$BRANCH"."$RELEASE".$$ ~/var/arm-queue/rtpengine."$BRANCH"."$RELEASE" || true
 		fi
+		if test -d ~/var/arm-queue2; then
+			echo https://dfx.at/rtpengine/"$BRANCH"/pool/main/r/rtpengine/rtpengine_"$FULL_VER".dsc > ~/var/arm-queue2/.rtpengine."$BRANCH"."$RELEASE".$$ || true
+			mv ~/var/arm-queue2/.rtpengine."$BRANCH"."$RELEASE".$$ ~/var/arm-queue2/rtpengine."$BRANCH"."$RELEASE" || true
+		fi
 	fi
 
 	cd ..

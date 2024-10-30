@@ -15,8 +15,8 @@ if test -n "$BRANCH"; then
 	 git checkout "$BRANCH"
 fi
 
-git tag > ~/.rtpe.all.tags.$$
-git branch -r > ~/.rtpe.all.branches.$$
+git tag --sort=version:refname > ~/.rtpe.all.tags.$$
+git branch -r --sort=version:refname > ~/.rtpe.all.branches.$$
 cd ..
 mv -f ~/.rtpe.all.tags.$$ ~/.rtpe.all.tags.new
 mv -f ~/.rtpe.all.branches.$$ ~/.rtpe.all.branches.new

@@ -19,3 +19,5 @@ for RELEASE in $RELEASES; do
 		sudo pbuilder update --basetgz ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".tgz --distribution "$RELEASE" --mirror "$MIRROR" --override-config --aptcache ~/var/cache/aptcache --buildplace ~/var/build
 	done
 done
+
+rm -f ~/var/cache/aptcache/*
