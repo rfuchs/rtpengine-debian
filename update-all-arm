@@ -1,0 +1,37 @@
+#!/bin/bash
+
+set -e
+set -x
+
+IMAGES=/home/dfx/var/cache/pbuilder
+RELEASES='bookworm sid trixie'
+ARCHS='arm64 armhf'
+
+cd ~/tmp
+mkdir updater.$$
+pushd updater.$$
+
+for RELEASE in $RELEASES; do
+	for ARCH in $ARCHS; do
+		mkdir "$ARCH"."$RELEASE"
+		pushd "$ARCH"."$RELEASE"
+		nice zstdcat < "$IMAGES"/debian-"$RELEASE"-"$ARCH".tar.zst | nice tar -x
+		mount --bind /dev ./dev
+		mount --bind /proc ./proc
+		echo "apt update -y" > updater
+		echo "apt full-upgrade -y" >> updater
+		echo "apt autoremove --purge -y" >> updater
+		echo "apt clean -y" >> updater
+		chroot . bash ./updater
+		rm updater
+		umount ./dev
+		umount ./proc
+		nice tar -c . | nice zstd -T0 -9 > "$IMAGES"/debian-"$RELEASE"-"$ARCH".tar.zst.new
+		mv "$IMAGES"/debian-"$RELEASE"-"$ARCH".tar.zst.new "$IMAGES"/debian-"$RELEASE"-"$ARCH".tar.zst
+		popd
+		rm -rf $ARCH.$RELEASE
+	done
+done
+
+popd
+rmdir updater.$$

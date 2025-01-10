@@ -43,6 +43,7 @@ for DIST in $DISTS; do
 			CODE=$?
 			set -e
 
+			##### XXX
 			cd .
 			cd ..
 			rm -rf "$BUILDDIR"
