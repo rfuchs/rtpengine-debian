@@ -8,6 +8,7 @@ ARCHS='amd64 i386'
 
 declare -A MIRRORS
 MIRRORS[stretch]=http://archive.debian.org/debian/
+MIRRORS[buster]=http://archive.debian.org/debian/
 
 for RELEASE in $RELEASES; do
 	MIRROR=http://deb.debian.org/debian
