@@ -24,7 +24,7 @@ for D in "$INPUT"/results.*; do
 			REPO=~/htdocs/dfx.at/rtpengine
 			SUB_REPO=true
 			;;
-		subsurface|subsurface-beta)
+		subsurface|subsurface-beta|subsurface-qt6|subsurface-qt6-beta)
 			REPO=~/htdocs/dfx.at/subsurface
 			SUB_REPO=false
 			;;
