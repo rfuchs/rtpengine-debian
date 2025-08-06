@@ -5,13 +5,13 @@ set -x
 
 declare -a errors
 
-EXTRA_MIRROR=http://archive.raspberrypi.org/debian/
+#EXTRA_MIRROR=http://archive.raspberrypi.org/debian/
 
-DISTS='bullseye bookworm'
+DISTS='bullseye bookworm trixie sid'
 ARCHS='armhf arm64'
 
 declare -A MIRRORS
-MIRRORS[stretch]=http://archive.debian.org/debian/
+#MIRRORS[stretch]=http://archive.debian.org/debian/
 
 SDIR=$1
 test -d "$SDIR"
@@ -43,7 +43,8 @@ for DIST in $DISTS; do
 
 			set +e
 			LOGFILE=build.log.$$."$DIST"-"$ARCH"
-			sudo cowbuilder --build --mirror "$MIRROR" --othermirror="deb $EXTRA_MIRROR $DIST main" --override-config --distribution "$DIST" --buildplace ~/var/cache/pbuilder/build --buildresult "$OUTPUTDIR" --basepath ~/var/cache/pbuilder/base-"$DIST"-$ARCH.cow --aptcache ~/var/cache/aptcache *.dsc > "../$LOGFILE" 2>&1
+			#sudo cowbuilder --build --mirror "$MIRROR" --othermirror="deb $EXTRA_MIRROR $DIST main" --override-config --distribution "$DIST" --buildplace ~/var/cache/pbuilder/build --buildresult "$OUTPUTDIR" --basepath ~/var/cache/pbuilder/base-"$DIST"-$ARCH.cow --aptcache ~/var/cache/aptcache *.dsc > "../$LOGFILE" 2>&1
+			sudo cowbuilder --build --mirror "$MIRROR" --override-config --distribution "$DIST" --buildplace ~/var/cache/pbuilder/build --buildresult "$OUTPUTDIR" --basepath ~/var/cache/pbuilder/base-"$DIST"-$ARCH.cow --aptcache ~/var/cache/aptcache *.dsc > "../$LOGFILE" 2>&1
 			CODE=$?
 			set -e
 
