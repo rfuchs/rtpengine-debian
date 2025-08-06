@@ -8,7 +8,7 @@ declare -a errors
 LAST_BUILD_ID=~/.rtpe.last.build.id
 BUILDDIR=~/tmp
 REPO=~/htdocs/dfx.at/rtpengine/beta
-RELEASES='sid, bookworm,~bpo12+1 bullseye,~bpo11+1 buster,~bpo10+1 trixie,~bpo13+1'
+RELEASES='sid, bookworm,~bpo12+1 bullseye,~bpo11+1 trixie,~bpo13+1'
 ARCHS='amd64 i386'
 
 test -n "$RTPENGINE_DEBIAN_SRCDIR"

@@ -6,7 +6,7 @@ set -x
 EXTRA_MIRROR=http://archive.raspberrypi.org/debian/
 BASE_URL=https://dfx.at/rtpengine
 
-DISTS='stretch bullseye buster bookworm'
+DISTS='bullseye bookworm sid trixie'
 ARCHS='armhf arm64'
 
 declare -A MIRRORS

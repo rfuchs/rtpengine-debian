@@ -9,7 +9,7 @@ TAG="$1"
 BRANCH=9.5
 BUILDDIR=~/tmp
 REPO=~/htdocs/dfx.at/rtpengine/"$BRANCH"
-RELEASES='sid, bookworm,~bpo12+1 bullseye,~bpo11+1 buster,~bpo10+1'
+RELEASES='sid, bookworm,~bpo12+1 bullseye,~bpo11+1'
 ARCHS='amd64 i386'
 
 BUILDNUM=${BUILDNUM:-1}

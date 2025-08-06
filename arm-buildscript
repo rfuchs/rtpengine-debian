@@ -7,7 +7,6 @@ declare -a errors
 
 EXTRA_MIRROR=http://archive.raspberrypi.org/debian/
 
-#DISTS='bullseye buster stretch bookworm'
 DISTS='bullseye bookworm'
 ARCHS='armhf arm64'
 

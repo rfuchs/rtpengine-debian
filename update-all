@@ -3,12 +3,11 @@
 set -e
 set -x
 
-RELEASES='sid bullseye buster bookworm trixie'
+RELEASES='sid bullseye bookworm trixie'
 ARCHS='amd64 i386'
 
 declare -A MIRRORS
-MIRRORS[stretch]=http://archive.debian.org/debian/
-MIRRORS[buster]=http://archive.debian.org/debian/
+#MIRRORS[buster]=http://archive.debian.org/debian/
 
 for RELEASE in $RELEASES; do
 	MIRROR=http://deb.debian.org/debian
