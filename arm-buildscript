@@ -44,7 +44,8 @@ for DIST in $DISTS; do
 			set +e
 			LOGFILE=build.log.$$."$DIST"-"$ARCH"
 			#sudo cowbuilder --build --mirror "$MIRROR" --othermirror="deb $EXTRA_MIRROR $DIST main" --override-config --distribution "$DIST" --buildplace ~/var/cache/pbuilder/build --buildresult "$OUTPUTDIR" --basepath ~/var/cache/pbuilder/base-"$DIST"-$ARCH.cow --aptcache ~/var/cache/aptcache *.dsc > "../$LOGFILE" 2>&1
-			sudo cowbuilder --build --mirror "$MIRROR" --override-config --distribution "$DIST" --buildplace ~/var/cache/pbuilder/build --buildresult "$OUTPUTDIR" --basepath ~/var/cache/pbuilder/base-"$DIST"-$ARCH.cow --aptcache ~/var/cache/aptcache *.dsc > "../$LOGFILE" 2>&1
+			#sudo cowbuilder --build --mirror "$MIRROR" --override-config --distribution "$DIST" --buildplace ~/var/cache/pbuilder/build --buildresult "$OUTPUTDIR" --basepath ~/var/cache/pbuilder/base-"$DIST"-$ARCH.cow --aptcache ~/var/cache/aptcache *.dsc > "../$LOGFILE" 2>&1
+			sudo pbuilder build --mirror "$MIRROR" --override-config --distribution "$DIST" --buildplace ~/var/build --buildresult "$OUTPUTDIR" --basetgz ~/var/cache/pbuilder/base-"$DIST"-$ARCH.tgz --aptcache ~/var/cache/aptcache *.dsc > "../$LOGFILE" 2>&1
 			CODE=$?
 			set -e
 
