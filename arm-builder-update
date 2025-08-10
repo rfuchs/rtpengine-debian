@@ -20,6 +20,6 @@ for DIST in $DISTS; do
 	for ARCH in $ARCHS; do
 		#sudo cowbuilder --update --mirror "$MIRROR" --othermirror="deb $EXTRA_MIRROR $DIST main" --override-config --distribution "$DIST" --basepath ~/var/cache/pbuilder/base-"$DIST"-"$ARCH".cow --aptcache ~/var/cache/aptcache --buildplace ~/var/cache/pbuilder/build
 		# sudo cowbuilder --update --mirror "$MIRROR" --override-config --distribution "$DIST" --basepath ~/var/cache/pbuilder/base-"$DIST"-"$ARCH".cow --aptcache ~/var/cache/aptcache --buildplace ~/var/cache/pbuilder/build
-		sudo pbuilder update --basetgz ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".tgz --distribution "$RELEASE" --mirror "$MIRROR" --override-config --aptcache ~/var/cache/aptcache --buildplace ~/var/build
+		sudo pbuilder update --basetgz ~/var/cache/pbuilder/base-"$DIST"-"$ARCH".tgz --distribution "$DIST" --mirror "$MIRROR" --override-config --aptcache ~/var/cache/aptcache --buildplace ~/var/build
 	done
 done
