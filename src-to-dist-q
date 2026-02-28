@@ -15,4 +15,15 @@ test -d "$TMPDIR"
 
 mv -v "$SRCDIR/*" "$TMPDIR"/ || true
 
+for FILE in "$TMPDIR"/*; do
+	BN=$(basename "$FILE")
 
+	for ARCH in "$ARCHS"; do
+		for DIST in "$DISTS"; do
+			DD="$DSTDIR"/"$ARCH"/"$DIST"
+			mkdir -p "$DD"
+			cp -v "$FILE" "$DD"/."$BN".$$
+			mv -v "$DD"/."$BN".$$ "$DD"/"$BN"
+		done
+	done
+done
