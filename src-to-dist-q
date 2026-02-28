@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -e
+set -x
+
+DISTS='forky bullseye bookworm trixie sid'
+ARCHS='armhf arm64'
+
+SRCDIR=$1
+test -d "$SRCDIR"
+DSTDIR=$2
+test -d "$DSTDIR"
+TMPDIR=$3
+test -d "$TMPDIR"
+
+mv -v "$SRCDIR/*" "$TMPDIR"/ || true
+
+
