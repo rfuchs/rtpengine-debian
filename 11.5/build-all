@@ -104,7 +104,7 @@ for RELEASE in $RELEASES; do
 		fi
 		if test -d ~/var/src-build-q; then
 			echo https://dfx.at/rtpengine/"$BRANCH"/pool/main/r/rtpengine/rtpengine_"$FULL_VER".dsc > ~/var/src-build-q/.rtpengine."$BRANCH"."$RELEASE".$$ || true
-			mv ~/var/src-build-q/.rtpengine."$BRANCH"."$RELEASE".$$ ~/var/arm-queue2/rtpengine."$BRANCH"."$RELEASE" || true
+			mv ~/var/src-build-q/.rtpengine."$BRANCH"."$RELEASE".$$ ~/var/src-build-q/rtpengine."$BRANCH"."$RELEASE" || true
 		fi
 	fi
 

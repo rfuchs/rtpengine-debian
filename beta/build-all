@@ -110,7 +110,7 @@ for RELEASE in $RELEASES; do
 	fi
 	if test -d ~/var/src-build-q; then
 		echo https://dfx.at/rtpengine/beta/pool/main/r/rtpengine/rtpengine_"$FULL_VER".dsc > ~/var/src-build-q/.rtpengine.beta."$RELEASE".$$ || true
-		mv ~/var/src-build-q/.rtpengine.beta."$RELEASE".$$ ~/var/arm-queue2/rtpengine.beta."$RELEASE" || true
+		mv ~/var/src-build-q/.rtpengine.beta."$RELEASE".$$ ~/var/src-build-q/rtpengine.beta."$RELEASE" || true
 	fi
 	cd ..
 done
