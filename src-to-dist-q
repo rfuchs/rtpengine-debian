@@ -13,7 +13,7 @@ test -d "$DSTDIR"
 TMPDIR=$3
 test -d "$TMPDIR"
 
-mv -v "$SRCDIR/*" "$TMPDIR"/ || true
+mv -v "$SRCDIR"/* "$TMPDIR"/ || true
 
 for FILE in "$TMPDIR"/*; do
 	BN=$(basename "$FILE")
