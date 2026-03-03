@@ -4,7 +4,7 @@ set -e
 set -x
 
 DISTS='forky bullseye bookworm trixie sid'
-ARCHS='armhf arm64'
+ARCHS='amd64 i386 armhf arm64'
 
 SRCDIR=$1
 test -d "$SRCDIR"
@@ -26,4 +26,6 @@ for FILE in "$TMPDIR"/*; do
 			mv -v "$DD"/."$BN".$$ "$DD"/"$BN"
 		done
 	done
+
+	rm -f "$FILE"
 done
