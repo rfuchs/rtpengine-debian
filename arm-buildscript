@@ -30,6 +30,8 @@ for DIST in $DISTS; do
 		URL=$(<"$QF")
 		FN=$(basename "$QF")
 
+		# FN=subsurface-qt6-beta.forky
+
 		for ARCH in $ARCHS; do
 
 			BUILDDIR=~/tmp/build.$RANDOM
@@ -56,7 +58,7 @@ for DIST in $DISTS; do
 				MVDIR="$SDIR"/arm-results/.results.$RANDOM
 				mkdir "$MVDIR"
 				mv -v "$OUTPUTDIR"/* "$MVDIR"
-				mv -v "$MVDIR" "$SDIR"/arm-results/results."$FN".$RANDOM."$DIST"
+				mv -v "$MVDIR" "$SDIR"/arm-results/results.$RANDOM."$FN"."$ARCH"
 				rmdir "$OUTPUTDIR"
 				rm -f "$LOGFILE"
 

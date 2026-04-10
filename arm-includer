@@ -7,16 +7,20 @@ INPUT=~/var/arm-results
 for D in "$INPUT"/results.*; do
 	BD=$(basename "$D")
 
-	if [[ "$BD" =~ \.([a-z]+)$ ]]; then
-		DIST=${BASH_REMATCH[1]}
-	else
-		continue
-	fi
-
-	if [[ "$BD" =~ ^results\.([a-z-]+)\. ]]; then
+	if [[ "$BD" =~ ^results\.[0-9]+\.([a-z0-9-]+)\.([a-z0-9.-]+)\.([a-z]+)\.([a-z0-9]+)$ ]]; then
 		PKG=${BASH_REMATCH[1]}
+		VER=${BASH_REMATCH[2]}
+		DIST=${BASH_REMATCH[3]}
+		ARCH=${BASH_REMATCH[4]}
 	else
-		continue
+		if [[ "$BD" =~ ^results\.[0-9]+\.([a-z0-9-]+)\.([a-z]+)\.([a-z0-9]+)$ ]]; then
+			PKG=${BASH_REMATCH[1]}
+			VER=''
+			DIST=${BASH_REMATCH[2]}
+			ARCH=${BASH_REMATCH[3]}
+		else
+			continue
+		fi
 	fi
 
 	case "$PKG" in
@@ -24,7 +28,7 @@ for D in "$INPUT"/results.*; do
 			REPO=~/htdocs/dfx.at/rtpengine
 			SUB_REPO=true
 			;;
-		subsurface|subsurface-beta|subsurface-qt6|subsurface-qt6-beta)
+		subsurface*)
 			REPO=~/htdocs/dfx.at/subsurface
 			SUB_REPO=false
 			;;
@@ -34,7 +38,7 @@ for D in "$INPUT"/results.*; do
 
 	for F in "$D"/*; do
 		case "$F" in
-			*_armhf.deb|*_arm64.deb)
+			*.deb)
 				;;
 			*)
 				rm -f "$F" || true
@@ -45,18 +49,11 @@ for D in "$INPUT"/results.*; do
 		REPO_DST=$REPO
 
 		if $SUB_REPO; then
-			if [[ "$F" =~ _[0-9]+~ ]]; then
-				REL=beta
-			elif [[ "$F" =~ _([0-9]+\.[0-9]+)\.[0-9]+\.[0-9]+- ]]; then
-				REL=${BASH_REMATCH[1]}
-			else
-				rm -f "$F"
-				continue
-			fi
-			REPO_DST="$REPO"/"$REL"
+			test -n "$VER"
+			REPO_DST="$REPO"/"$VER"
 		fi
 
-		reprepro -Vb "$REPO_DST" -P optional -S net -C main includedeb "$DIST" "$F"
+		reprepro -Vb "$REPO_DST" -P optional -S net -C main -A "$ARCH" includedeb "$DIST" "$F"
 		rm -f "$F"
 	done
 
