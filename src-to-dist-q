@@ -15,11 +15,11 @@ test -d "$TMPDIR"
 
 mv -v "$SRCDIR"/* "$TMPDIR"/ || true
 
-for FILE in "$TMPDIR"/*; do
-	BN=$(basename "$FILE")
+for DIST in $DISTS; do
+	for FILE in "$TMPDIR"/*."$DIST"; do
+		BN=$(basename "$FILE") # rtpengine.beta.sid | rtpengine.26.0.sid
 
-	for ARCH in $ARCHS; do
-		for DIST in $DISTS; do
+		for ARCH in $ARCHS; do
 			DD="$DSTDIR"/"$ARCH"/"$DIST"
 			mkdir -p "$DD"
 			cp -v "$FILE" "$DD"/."$BN".$$
