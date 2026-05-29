@@ -1,0 +1,50 @@
+#!/bin/bash
+
+set -e
+
+INPUT=$1
+test -d "$INPUT"
+
+for AD in "$INPUT"/*; do
+	# AD = .../amd64
+	ARCH=$(basename "$AD")
+
+	for DD in "$AD"/*; do
+		# DD = .../amd64/trixie
+		DIST=$(basename "$DD")
+
+		for D in "$DD"/*; do
+			# D = .../amd64/trixie/rtpengine.beta
+
+			BD=$(basename "$D")
+
+			BRANCH=''
+
+			case "$BD" in
+				rtpengine.*)
+					REPO=~/htdocs/dfx.at/rtpengine
+					if [[ "$BD" =~ ^rtpengine\.(.*)$ ]]; then
+						BRANCH=${BASH_REMATCH[1]}
+					else
+						continue
+					fi
+					;;
+				*)
+					continue
+					;;
+			esac
+
+			for F in "$D"/*.deb; do
+				REPO_DST=$REPO
+
+				if ! test "$BRANCH" = ""; then
+					REPO_DST="$REPO"/"$BRANCH"
+				fi
+
+				reprepro -Vb "$REPO_DST" -P optional -S net -C main -A "$ARCH" includedeb "$DIST" "$F"
+			done
+
+			rm -rf "$D"
+		done
+	done
+done
