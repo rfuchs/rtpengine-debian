@@ -13,11 +13,15 @@ test -d "$DSTDIR"
 TMPDIR=$3
 test -d "$TMPDIR"
 
-mv -v "$SRCDIR"/* "$TMPDIR"/ || true
 
 for DIST in $DISTS; do
-	for FILE in "$TMPDIR"/*."$DIST"; do
-		BN=$(basename "$FILE") # rtpengine.beta.sid | rtpengine.26.0.sid
+	test -d "$TMPDIR"/"$DIST" || continue
+
+	mkdir -p "$TMPDIR"/"$DIST"
+	mv -v "$SRCDIR"/"$DIST"/* "$TMPDIR"/"$DIST"/ || true
+
+	for FILE in "$TMPDIR"/"$DIST"/*; do
+		BN=$(basename "$FILE") # rtpengine.beta | rtpengine.26.0 | subsurface-qt6
 
 		for ARCH in $ARCHS; do
 			DD="$DSTDIR"/"$ARCH"/"$DIST"
@@ -25,7 +29,7 @@ for DIST in $DISTS; do
 			cp -v "$FILE" "$DD"/."$BN".$$
 			mv -v "$DD"/."$BN".$$ "$DD"/"$BN"
 		done
-	done
 
-	rm -f "$FILE"
+		rm -f "$FILE"
+	done
 done

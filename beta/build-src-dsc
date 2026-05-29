@@ -63,8 +63,9 @@ for RELEASE in $RELEASES; do
 	reprepro -Vb "$REPO" -C main -P optional -S net includedsc "$RELEASE" rtpengine_"$FULL_VER".dsc
 
 	if test -d ~/var/src-build-q; then
-		echo https://dfx.at/rtpengine/beta/pool/main/r/rtpengine/rtpengine_"$FULL_VER".dsc > ~/var/src-build-q/.rtpengine.beta."$RELEASE".$$ || true
-		mv ~/var/src-build-q/.rtpengine.beta."$RELEASE".$$ ~/var/src-build-q/rtpengine.beta."$RELEASE" || true
+		mkdir -p ~/var/src-build-q/"$RELEASE"
+		echo https://dfx.at/rtpengine/beta/pool/main/r/rtpengine/rtpengine_"$FULL_VER".dsc > ~/var/src-build-q/"$RELEASE"/.rtpengine.beta.$$ || true
+		mv ~/var/src-build-q/"$RELEASE"/.rtpengine.beta.$$ ~/var/src-build-q/"$RELEASE"/rtpengine.beta || true
 	fi
 	cd ..
 done

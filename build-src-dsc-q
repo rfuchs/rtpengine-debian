@@ -1,0 +1,102 @@
+#!/bin/bash
+
+# $0 ~/var/src-dist-build-q/ ~/var/src-dist-build-q-cur/ ~/var/artefacts/ amd64 forky bullseye bookworm trixie sid
+
+set -e
+set -x
+
+declare -a errors
+
+MIRROR=http://deb.debian.org/debian
+
+SDIR=$1
+test -d "$SDIR"
+shift
+
+TDIR=$1
+test -d "$TDIR"
+shift
+
+ODIR=$1
+test -d "$ODIR"
+shift
+
+ARCH=$1
+test -d "$SDIR"/"$ARCH"
+shift
+
+DISTS=$@
+
+for DIST in $DISTS; do
+	test -d "$SDIR"/"$ARCH"/"$DIST"
+
+	mkdir -p "$TDIR"/"$ARCH"/"$DIST"
+	mv -v "$SDIR"/"$ARCH"/"$DIST"/* "$TDIR"/"$ARCH"/"$DIST"/ || true
+
+	OADDIR="$ODIR"/"$ARCH"/"$DIST"
+	mkdir -p "$OADDIR"
+
+	for QF in "$TDIR"/"$ARCH"/"$DIST"/*; do
+		test -f "$QF" || continue
+
+		URL=$(<"$QF")
+		FN=$(basename "$QF")
+
+		# FN=rtpengine.13.5
+		# FN=rtpengine.beta
+		# FN=subsurface-qt6
+
+		BUILDDIR=~/tmp/build.$RANDOM
+		OUTPUTDIR=~/tmp/artefacts.$RANDOM
+
+		mkdir "$BUILDDIR"
+		mkdir "$OUTPUTDIR"
+
+		cd "$BUILDDIR"
+		dget --allow-unauthenticated "$URL"
+
+		profiles=()
+
+		if ! test "$DIST" = bullseye; then
+			profiles+=(pkg.rtpengine.pysip-lite)
+		fi
+
+		profs=$(echo "${profiles[@]}" | sed 's/ /,/g')
+
+		set +e
+		LOGFILE=build.log.$$."$DIST"-"$ARCH"
+		sudo pbuilder build --profiles "$profs" --mirror "$MIRROR" --override-config --distribution "$DIST" --buildplace ~/var/build --buildresult "$OUTPUTDIR" --basetgz ~/var/cache/pbuilder/base-"$DIST"-$ARCH.tgz --aptcache ~/var/cache/aptcache *.dsc > "../$LOGFILE" 2>&1
+		CODE=$?
+		set -e
+
+		cd ..
+		rm -rf "$BUILDDIR"
+
+		if test "$CODE" -eq 0; then
+			MVDIR="$OADDIR"/."$FN".$RANDOM
+			mkdir -p "$MVDIR"
+			mv -v "$OUTPUTDIR"/* "$MVDIR"
+			rm -rf "$OADDIR"/"$FN"
+			mv -v "$MVDIR" "$OADDIR"/"$FN"
+			rmdir "$OUTPUTDIR"
+			rm -f "$LOGFILE"
+
+		else
+			echo build failed
+			echo build log: "$LOGFILE"
+			mv "$LOGFILE" ~/
+			errors+=("build failed: $LOGFILE")
+		fi
+
+		rm -f "$QF"
+	done
+done
+
+
+if test ${#errors[@]} -gt 0; then
+	echo errors:
+	echo "${errors[@]}"
+	exit 1
+fi
+
+exit 0
