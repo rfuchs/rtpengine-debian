@@ -1,0 +1,31 @@
+#!/bin/bash
+
+set -e
+set -x
+
+DISTS='forky bullseye bookworm trixie sid'
+
+ARCHS='armhf arm64'
+
+SRCDIR=$1
+test -d "$SRCDIR"
+DSTDIR=$2
+test -d "$DSTDIR"
+
+for ARCH in $ARCHS; do
+	test -d "$SRCDIR"/"$ARCH" || continue
+	mkdir -p "$DSTDIR"/"$ARCH"
+
+	for DIST in $DISTS; do
+		test -d "$SRCDIR"/"$ARCH"/"$DIST" || continue
+		DD="$DSTDIR"/"$ARCH"/"$DIST"
+		mkdir -p "$DD"
+
+		for FILE in "$SRCDIR"/"$ARCH"/"$DIST"/*; do
+			test -f "$FILE" || continue
+			BN=$(basename "$FILE")
+			mv -v "$FILE" "$DD"/."$BN".$$
+			mv -v "$DD"/."$BN".$$ "$DD"/"$BN"
+		done
+	done
+done
