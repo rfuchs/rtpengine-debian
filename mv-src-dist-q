@@ -22,8 +22,9 @@ for ARCH in $ARCHS; do
 		mkdir -p "$DD"
 
 		for FILE in "$SRCDIR"/"$ARCH"/"$DIST"/*; do
-			test -f "$FILE" || continue
+			test -e "$FILE" || continue
 			BN=$(basename "$FILE")
+			test -e "$DD"/"$BN" && continue
 			mv -v "$FILE" "$DD"/."$BN".$$
 			mv -v "$DD"/."$BN".$$ "$DD"/"$BN"
 		done
