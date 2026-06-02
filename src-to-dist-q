@@ -21,6 +21,8 @@ for DIST in $DISTS; do
 	mv -v "$SRCDIR"/"$DIST"/* "$TMPDIR"/"$DIST"/ || true
 
 	for FILE in "$TMPDIR"/"$DIST"/*; do
+		test -e "$FILE" || continue
+
 		BN=$(basename "$FILE") # rtpengine.beta | rtpengine.26.0 | subsurface-qt6
 
 		for ARCH in $ARCHS; do
