@@ -15,6 +15,7 @@ for AD in "$INPUT"/*; do
 
 		for D in "$DD"/*; do
 			# D = .../amd64/trixie/rtpengine.beta
+			# D = .../amd64/trixie/subsurface-beta
 
 			BD=$(basename "$D")
 
@@ -28,6 +29,9 @@ for AD in "$INPUT"/*; do
 					else
 						continue
 					fi
+					;;
+				subsurface*)
+					REPO=~/htdocs/dfx.at/subsurface/
 					;;
 				*)
 					continue
