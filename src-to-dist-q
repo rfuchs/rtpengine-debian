@@ -15,7 +15,7 @@ test -d "$TMPDIR"
 
 
 for DIST in $DISTS; do
-	test -d "$TMPDIR"/"$DIST" || continue
+	test -d "$SRCDIR"/"$DIST" || continue
 
 	mkdir -p "$TMPDIR"/"$DIST"
 	mv -v "$SRCDIR"/"$DIST"/* "$TMPDIR"/"$DIST"/ || true
