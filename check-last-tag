@@ -36,7 +36,7 @@ for BRANCH in "${!BUILD[@]}"; do
 	fi
 
 	set +e
-	~/bin/log-wrapper "$RTPENGINE_DEBIAN_SRCDIR"/"$BRANCH"/build-all "$NEW_TAG"
+	~/bin/log-wrapper "$RTPENGINE_DEBIAN_SRCDIR"/"$BRANCH"/build-src-dsc "$NEW_TAG" "$BRANCH"
 	set -e
 
 	echo "$NEW_TAG" > "$CUR_FILE"
