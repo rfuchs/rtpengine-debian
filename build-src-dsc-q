@@ -53,7 +53,13 @@ for DIST in $DISTS; do
 		mkdir "$OUTPUTDIR"
 
 		cd "$BUILDDIR"
-		dget --allow-unauthenticated "$URL"
+		if ! dget --allow-unauthenticated "$URL"; then
+			echo download failed, skipping
+			cd ..
+			rmdir "$BUILDDIR"
+			rmdir "$OUTPUTDIR"
+			continue
+		fi
 
 		profiles=()
 
