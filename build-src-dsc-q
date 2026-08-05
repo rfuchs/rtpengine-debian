@@ -7,8 +7,6 @@ set -x
 
 declare -a errors
 
-MIRROR=http://deb.debian.org/debian
-
 SDIR=$1
 test -d "$SDIR"
 shift
@@ -71,7 +69,7 @@ for DIST in $DISTS; do
 
 		set +e
 		LOGFILE=build.log.$$."$DIST"-"$ARCH"
-		sudo pbuilder build --profiles "$profs" --mirror "$MIRROR" --override-config --distribution "$DIST" --buildplace ~/var/build --buildresult "$OUTPUTDIR" --basetgz ~/var/cache/pbuilder/base-"$DIST"-$ARCH.tgz --aptcache ~/var/cache/aptcache *.dsc > "../$LOGFILE" 2>&1
+		sudo pbuilder build --profiles "$profs" --buildplace ~/var/build --buildresult "$OUTPUTDIR" --basetgz ~/var/cache/pbuilder/base-"$DIST"-$ARCH.tgz --aptcache ~/var/cache/aptcache *.dsc > "../$LOGFILE" 2>&1
 		CODE=$?
 		set -e
 

@@ -3,30 +3,33 @@
 set -e
 set -x
 
-DISTS='forky bullseye bookworm trixie sid'
-
-ARCHS='armhf arm64'
+ARCH=$1
+shift
 
 SRCDIR=$1
 test -d "$SRCDIR"
-DSTDIR=$2
+shift
+
+DSTDIR=$1
 test -d "$DSTDIR"
+shift
 
-for ARCH in $ARCHS; do
-	test -d "$SRCDIR"/"$ARCH" || continue
-	mkdir -p "$DSTDIR"/"$ARCH"
+DISTS="$@"
+echo "$DISTS"
 
-	for DIST in $DISTS; do
-		test -d "$SRCDIR"/"$ARCH"/"$DIST" || continue
-		DD="$DSTDIR"/"$ARCH"/"$DIST"
-		mkdir -p "$DD"
+test -d "$SRCDIR"/"$ARCH" || continue
+mkdir -p "$DSTDIR"/"$ARCH"
 
-		for FILE in "$SRCDIR"/"$ARCH"/"$DIST"/*; do
-			test -e "$FILE" || continue
-			BN=$(basename "$FILE")
-			test -e "$DD"/"$BN" && continue
-			mv -v "$FILE" "$DD"/."$BN".$$
-			mv -v "$DD"/."$BN".$$ "$DD"/"$BN"
-		done
+for DIST in $DISTS; do
+	test -d "$SRCDIR"/"$ARCH"/"$DIST" || continue
+	DD="$DSTDIR"/"$ARCH"/"$DIST"
+	mkdir -p "$DD"
+
+	for FILE in "$SRCDIR"/"$ARCH"/"$DIST"/*; do
+		test -e "$FILE" || continue
+		BN=$(basename "$FILE")
+		test -e "$DD"/"$BN" && continue
+		mv -v "$FILE" "$DD"/."$BN".$$
+		mv -v "$DD"/."$BN".$$ "$DD"/"$BN"
 	done
 done

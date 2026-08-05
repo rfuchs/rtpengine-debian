@@ -6,7 +6,7 @@ set -x
 LAST_BUILD_ID=~/.rtpe.last.build.id
 BUILDDIR=~/tmp
 REPO=~/htdocs/dfx.at/rtpengine/beta
-RELEASES='forky,~bpo14+1 bookworm,~bpo12+1 bullseye,~bpo11+1 trixie,~bpo13+1 sid,'
+RELEASES='forky,~bpo14+1 bookworm,~bpo12+1 bullseye,~bpo11+1 trixie,~bpo13+1 sid, resolute,~1ubuntu1.26.04.1 noble,~1ubuntu1.24.04.1 jammy,~1ubuntu1.22.04.1'
 
 test -n "$RTPENGINE_DEBIAN_SRCDIR"
 
