@@ -3,14 +3,12 @@
 set -e
 set -x
 
-RELEASES='forky sid bullseye bookworm trixie'
-ARCHS='amd64 i386'
+RELEASE=$1
+shift
+ARCHS="$@"
 
-for RELEASE in $RELEASES; do
-	for ARCH in $ARCHS; do
-		# sudo pbuilder --create --basetgz ~/var/cache/pbuilder/base-trixie-amd64.tgz --distribution trixie --architecture amd64 --mirror http://deb.debian.org/debian --override-config --aptcache ~/var/cache/aptcache --buildplace ~/var/build
-		sudo pbuilder update --basetgz ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".tgz --aptcache ~/var/cache/aptcache --buildplace ~/var/build
-	done
+for ARCH in $ARCHS; do
+	sudo pbuilder update --basetgz ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".tgz --aptcache ~/var/cache/aptcache --buildplace ~/var/build
 done
 
 rm -f ~/var/cache/aptcache/*
